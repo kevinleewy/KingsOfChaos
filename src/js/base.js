@@ -62,33 +62,21 @@ App = {
         });
 
         kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
+          var gold = numberWithCommas(kingdom[4].c[0]);
           var sidebar_user_stats = $('#sidebar_user_stats');
-          sidebar_user_stats.find('.gold').text(kingdom[5]);
+          sidebar_user_stats.find('.gold').text(gold);
           
           var race = idToRace(kingdom[1].c[0]);
           var user_info = $('#user_info');
           user_info.find('.name').text(kingdom[0]);
           user_info.find('.race').text(race);
-          user_info.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[6]);
-          user_info.find('.commander').text(kingdom[7]);
+          user_info.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[5]);
+          user_info.find('.commander').text(kingdom[6]);
 
           var military_overview_table = $('#military_overview_table');
-          military_overview_table.find('.weapon_name').text(weaponLevelToName(kingdom[3].c[0]));
-          military_overview_table.find('.fortress_name').text(fortressLevelToName(kingdom[4].c[0]));
-          military_overview_table.find('.gold').text(numberWithCommas(kingdom[5].c[0]));
-        });
-
-        kingdomFactoryInstance.getMyPersonnel().then(function(personnel) {
-          var personnelTable = $('#personnel');
-          personnelTable.find('.untrainedSoldiers').text(numberWithCommas(personnel[0]));
-          personnelTable.find('.spies').text(numberWithCommas(personnel[1]));
-          personnelTable.find('.sentries').text(numberWithCommas(personnel[2]));
-          var totalFightingForce = 0;
-          personnel.forEach(function(x){
-            totalFightingForce += x.c[0];
-          })
-          personnelTable.find('.totalFightingForce').text(numberWithCommas(totalFightingForce));
-          personnelTable.find('.personnelCount').text(numberWithCommas(totalFightingForce));
+          military_overview_table.find('.weapon_name').text(weaponLevelToName(kingdom[2].c[0]));
+          military_overview_table.find('.fortress_name').text(fortressLevelToName(kingdom[3].c[0]));
+          military_overview_table.find('.gold').text(gold);
         });
 
         kingdomFactoryInstance.getMyRecentAttacks().then(function(recentAttacks) {
@@ -126,6 +114,21 @@ App = {
               })(i);
             } 
           }
+        });
+
+        kingdomFactoryInstance.getMyPersonnel().then(function(personnel) {
+          var personnelTable = $('#personnel');
+          personnelTable.find('.untrainedSoldiers').text(numberWithCommas(personnel[0]));
+          personnelTable.find('.trainedAttackSoldiers').text(numberWithCommas(personnel[1]));
+          personnelTable.find('.trainedDefenseSoldiers').text(numberWithCommas(personnel[2]));
+          personnelTable.find('.spies').text(numberWithCommas(personnel[3]));
+          personnelTable.find('.sentries').text(numberWithCommas(personnel[4]));
+          var totalFightingForce = 0;
+          personnel.forEach(function(x){
+            totalFightingForce += x.c[0];
+          })
+          personnelTable.find('.totalFightingForce').text(numberWithCommas(totalFightingForce));
+          personnelTable.find('.personnelCount').text(numberWithCommas(totalFightingForce));
         });
 
         kingdomFactoryInstance.myStrikeAction().then(function(strikeAction){

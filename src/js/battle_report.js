@@ -124,8 +124,8 @@ App = {
         }
 
         kingdomFactoryInstance.attack(App.targetId).then(function(){
-          alert("Attacked!");
           kingdomFactoryInstance.BattleCompleted().watch(function(err, response){
+            alert("Attacked!");
             var battleId = response.args.battleId.c[0];
             location.assign("battle_report.html?id=" + battleId + "&pov=1");
           });

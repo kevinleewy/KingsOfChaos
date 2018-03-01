@@ -124,8 +124,8 @@ App = {
         }
 
         kingdomFactoryInstance.attack(targetId).then(function(){
-          alert("Attacked!");
           kingdomFactoryInstance.BattleCompleted().watch(function(err, response){
+            alert("Attacked!");
             var battleId = response.args.battleId.c[0];
             location.assign("battle_report.html?id=" + battleId + "&pov=1");
           });
@@ -155,8 +155,10 @@ App = {
         }
 
         kingdomFactoryInstance.assignCommander(id).then(function(){
-          alert("Changed Commander!");
-          location.assign("");
+          kingdomFactoryInstance.CommanderAssigned().watch(function(err, response){
+            alert("Changed Commander!");
+            location.assign("");
+          });
         });
 
 

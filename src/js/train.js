@@ -36,8 +36,8 @@ App = {
   },
 
   bindEvents: function() {
-    //$(document).on('click', '#trainAttackButton', App.trainAttack);
-    //$(document).on('click', '#trainDefenseButton', App.trainDefense);
+    $(document).on('click', '#trainAttackButton', App.trainAttack);
+    $(document).on('click', '#trainDefenseButton', App.trainDefense);
     $(document).on('click', '#trainSpiesButton', App.trainSpies);
     $(document).on('click', '#trainSentriesButton', App.trainSentries);
     //$(document).on('click', '#reassignAttackButton', App.reassignAttack);
@@ -60,8 +60,10 @@ App = {
         kingdomFactoryInstance.getMyPersonnel().then(function(personnel) {
           var personnelTable = $('#personnel');
           personnelTable.find('.untrainedSoldiers').text(numberWithCommas(personnel[0]));
-          personnelTable.find('.spies').text(numberWithCommas(personnel[1]));
-          personnelTable.find('.sentries').text(numberWithCommas(personnel[2]));
+          personnelTable.find('.trainedAttackSoldiers').text(numberWithCommas(personnel[1]));
+          personnelTable.find('.trainedDefenseSoldiers').text(numberWithCommas(personnel[2]));
+          personnelTable.find('.spies').text(numberWithCommas(personnel[3]));
+          personnelTable.find('.sentries').text(numberWithCommas(personnel[4]));
           var totalFightingForce = 0;
           personnel.forEach(function(x){
             totalFightingForce += x.c[0];
@@ -69,12 +71,63 @@ App = {
           personnelTable.find('.totalFightingForce').text(numberWithCommas(totalFightingForce));
           personnelTable.find('.personnelCount').text(numberWithCommas(totalFightingForce));
         });
-
         
       });
     }).catch(function(err) {
       console.log('displayBase:' + err.message);
     });
+  },
+
+  trainAttack: function(event){
+    event.preventDefault();
+
+    var count = parseInt($('#attackQuantity').val());
+    if(count > 0){
+      this.value = "Training...";
+      this.disabled = "disabled";
+
+      var kingdomFactoryInstance;
+
+      App.contracts.KingdomFactory.deployed().then(function(instance) {
+        kingdomFactoryInstance = instance;
+        kingdomFactoryInstance.trainAttackSpecialists(count).then(function(haveKingdom){
+          kingdomFactoryInstance.TrainedAttackSpecialists().watch(function(err, response){
+            alert("Trained Attack Specialists!");
+            location.assign("train.html");
+          });
+        })
+      }).catch(function(err) {
+        console.log('Training Attack Specialists:' + err.message);
+      });
+    } else {
+      alert("Quantity must be greater than 0");
+    }   
+  },
+
+  trainDefense: function(event){
+    event.preventDefault();
+
+    var count = parseInt($('#defenseQuantity').val());
+    if(count > 0){
+      this.value = "Training...";
+      this.disabled = "disabled";
+
+      var kingdomFactoryInstance;
+
+      App.contracts.KingdomFactory.deployed().then(function(instance) {
+        kingdomFactoryInstance = instance;
+        kingdomFactoryInstance.trainDefenseSpecialists(count).then(function(haveKingdom){
+          kingdomFactoryInstance.TrainedDefenseSpecialists().watch(function(err, response){
+            alert("Trained Defense Specialists!");
+            location.assign("train.html");
+          });
+        })
+      }).catch(function(err) {
+        console.log('Training Defense Specialists:' + err.message);
+      });
+    } else {
+      alert("Quantity must be greater than 0");
+    }   
   },
 
   trainSpies: function(event){

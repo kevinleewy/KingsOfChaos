@@ -65,19 +65,21 @@ App = {
         for (var i = 0; i < numOfKingdoms; i++) {
           (function(id) {
             kingdomFactoryInstance.getKingdom(id).then(function(kingdom){
-              kingdomTemplate.find('.name').attr("href", "/pages/stats.html?id=" + id);
-              kingdomTemplate.find('.name').text(kingdom[0]);
-              var race = idToRace(kingdom[1].c[0]);
-              var image = 'images/main/' + race.toLowerCase() + '_shield.gif';
-              kingdomTemplate.find('img').attr('src', image);
-              kingdomTemplate.find('.race').text(race);
-              kingdomTemplate.find('.numOfSoldiers').text(kingdom[2]);
-              kingdomTemplate.find('.siegeTechnology').text(weaponLevelToName(kingdom[3].c[0]));
-              kingdomTemplate.find('.fortification').text(fortressLevelToName(kingdom[4].c[0]));
-              kingdomTemplate.find('.gold').text(kingdom[5]);
-              kingdomTemplate.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[6]);
-              kingdomTemplate.find('.commander').text(kingdom[7]);
-              kingdomsRow.append(kingdomTemplate.html());
+              kingdomFactoryInstance.getPersonnel(id).then(function(personnel){
+                kingdomTemplate.find('.name').attr("href", "/pages/stats.html?id=" + id);
+                kingdomTemplate.find('.name').text(kingdom[0]);
+                var race = idToRace(kingdom[1].c[0]);
+                var image = 'images/main/' + race.toLowerCase() + '_shield.gif';
+                kingdomTemplate.find('img').attr('src', image);
+                kingdomTemplate.find('.race').text(race);
+                kingdomTemplate.find('.numOfSoldiers').text(personnel[0]);
+                kingdomTemplate.find('.siegeTechnology').text(weaponLevelToName(kingdom[2].c[0]));
+                kingdomTemplate.find('.fortification').text(fortressLevelToName(kingdom[3].c[0]));
+                kingdomTemplate.find('.gold').text(kingdom[4]);
+                kingdomTemplate.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[5]);
+                kingdomTemplate.find('.commander').text(kingdom[6]);
+                kingdomsRow.append(kingdomTemplate.html());
+              });
             });
           })(i);
         }

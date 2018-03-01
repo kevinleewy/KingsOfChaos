@@ -79,22 +79,28 @@ App = {
         for (var i = start; i < end; i++) {
           (function(id) {
             kingdomFactoryInstance.getKingdom(id).then(function(kingdom){
-              $('#battlefieldTable tr:last').before('\
-                <tr class="player" user_id="' + id + '" >\
-                    <td align="center" valign="middle" style="padding: 0">\
-                        <img class="buddy_type" style="display: none" alt="" src="/images//buddy_icons/small_icon_.gif">\
-                        &nbsp;\
-                    </td>\
-                    <td align="right" style="color: #ffffff;">\
-                        <a href="alliances.php?id=">&nbsp;</a>\
-                    </td>\
-                    <td><a class="player" href="stats.html?id=' + id + '" >' + kingdom[0] + '</a></td>\
-                    <td align="right">' + numberWithCommas(kingdom[2].c[0]) + '</td>\
-                    <td align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
-                    <td align="right" style="padding-right: 20px;">' +  numberWithCommas(kingdom[5].c[0]) + ' Gold</td>\
-                    <td align="right" style="padding-right: 20px;">' + numberWithCommas(id) + '</td>\
-                </tr>\
-              ');                  
+              kingdomFactoryInstance.getPersonnel(id).then(function(personnel){
+                var totalFightingForce = 0;
+                personnel.forEach(function(x){
+                  totalFightingForce += x.c[0];
+                })
+                $('#battlefieldTable tr:last').before('\
+                  <tr class="player" user_id="' + id + '" >\
+                      <td align="center" valign="middle" style="padding: 0">\
+                          <img class="buddy_type" style="display: none" alt="" src="/images//buddy_icons/small_icon_.gif">\
+                          &nbsp;\
+                      </td>\
+                      <td align="right" style="color: #ffffff;">\
+                          <a href="alliances.php?id=">&nbsp;</a>\
+                      </td>\
+                      <td><a class="player" href="stats.html?id=' + id + '" >' + kingdom[0] + '</a></td>\
+                      <td align="right">' + numberWithCommas(totalFightingForce) + '</td>\
+                      <td align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
+                      <td align="right" style="padding-right: 20px;">' +  numberWithCommas(kingdom[4].c[0]) + ' Gold</td>\
+                      <td align="right" style="padding-right: 20px;">' + numberWithCommas(id) + '</td>\
+                  </tr>\
+                ');   
+              });               
             });
           })(i);
         }

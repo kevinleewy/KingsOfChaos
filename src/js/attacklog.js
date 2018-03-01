@@ -83,7 +83,7 @@ App = {
                         <tr>\
                             <td align="right">' + time + '</td>\
                             <td align="left"> ago</td>\
-                            <td align="left"><a href="stats.php?id=' + enemyKingdomId + '">' + name + '</a></td>\
+                            <td align="left"><a href="stats.html?id=' + enemyKingdomId + '">' + name + '</a></td>\
                             <td align="left">attack</td>\
                             <td align="right"><a href="battle_report.html?id=' + battleId + '">14,728 Gold stolen</a></td>\
                             <td align="right">' + numberWithCommas(battle[4].c[0]) + '</td>\
@@ -97,6 +97,7 @@ App = {
               })(i);
             } 
           }
+          $('#recentAttacksOnYouTable').find('.totalAttacksOnYou').text(count);
         });
 
         kingdomFactoryInstance.getMyRecent10OutgoingAttacks().then(function(recentAttacks) {
@@ -112,7 +113,6 @@ App = {
                 var attack = recentAttacks[index];
                 var time = secondsToDays(attack[0].c[0]);
                 var battleId = attack[1].c[0];
-                console.log(battleId)
                 kingdomFactoryInstance.getBattle(battleId).then(function(battle){
                   var enemyKingdomId = battle[1].c[0];
                   kingdomFactoryInstance.getKingdom(enemyKingdomId).then(function(enemyKingdom){
@@ -121,7 +121,7 @@ App = {
                         <tr>\
                             <td align="right">' + time + '</td>\
                             <td align="left"> ago</td>\
-                            <td align="left"><a href="stats.php?id=' + enemyKingdomId + '">' + name + '</a></td>\
+                            <td align="left"><a href="stats.html?id=' + enemyKingdomId + '">' + name + '</a></td>\
                             <td align="right"><a href="battle_report.html?id=' + battleId + '">14,728 Gold stolen</a></td>\
                             <td align="right">' + numberWithCommas(battle[5].c[0]) + '</td>\
                             <td align="right">' + numberWithCommas(battle[4].c[0]) + '</td>\
@@ -134,6 +134,8 @@ App = {
               })(i);
             } 
           }
+          console.log(count)
+          $('#recentAttacksByYouTable').find('.totalAttacksByYou').text(count);
         });
       });
 

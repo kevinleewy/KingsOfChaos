@@ -7,10 +7,14 @@ contract KingdomFactory {
     event UpgradeFortress(uint kingdomId, uint fortressLevel);
     event BattleCompleted(uint battleId);
     event Recruit(uint kingdomId);
+    event CommanderAssigned(uint kingdomId, uint commanderId);
+    event TrainedAttackSpecialists(uint kingdomId, uint count);
+    event TrainedDefenseSpecialists(uint kingdomId, uint count);
     event TrainedSpies(uint kingdomId, uint count);
     event TrainedSentries(uint kingdomId, uint count);
 
     Kingdom[] private kingdoms;
+    Military[] private militaries;
     Battle[] private battles;
 
     mapping (address => uint256) private kingdomOf;
@@ -32,14 +36,19 @@ contract KingdomFactory {
 
     struct Kingdom {
       string name;
-      uint8 race; //0 - human; 1 - dwarves; 
+      uint8 race; //0 - divine; 1 - human; 2 - dwarves; 
       uint8 weaponLevel;
       uint8 fortressLevel;
-      uint256 numOfSoldiers;
-      uint256 numOfSpies;
-      uint256 numOfSentries;
       uint256 gold;
       uint256 commander;
+    }
+
+    struct Military {
+      uint256 numOfSoldiers;
+      uint256 numOfAttackSpecialists;
+      uint256 numOfDefenseSpecialists;
+      uint256 numOfSpies;
+      uint256 numOfSentries;      
     }
 
     struct Battle {
@@ -67,7 +76,8 @@ contract KingdomFactory {
     function _createKingdom(string _name, uint _race, uint8 weaponLevel, uint8 fortressLevel,
       uint _numOfSoldiers, uint _numOfSpies, uint _numOfSentries, uint _commander) private returns (uint){
 
-      uint id = kingdoms.push(Kingdom(_name, uint8(_race), weaponLevel, fortressLevel, _numOfSoldiers, _numOfSpies, _numOfSentries, 0, _commander)) - 1;
+      uint id = kingdoms.push(Kingdom(_name, uint8(_race), weaponLevel, fortressLevel, 0, _commander)) - 1;
+      militaries.push(Military(_numOfSoldiers, 0, 0, _numOfSpies, _numOfSentries));
       kingdomToOwner[id] = msg.sender;
       kingdomOf[msg.sender] = id;
       numOfOfficers[_commander] += 1;
@@ -80,25 +90,17 @@ contract KingdomFactory {
       return _createKingdom(_name, _race, 0, 0, 0, 0, 0, 0);
     }
 
-    function getKingdomTest(uint _id) public view returns (bytes, uint8, uint, uint8, uint8, uint, uint, bytes) {
+    function getKingdom(uint _id) public view returns (string, uint8, uint8, uint8, uint, uint, string) {
       var kingdom = kingdoms[_id];
       var commanderName = kingdoms[kingdom.commander].name;
-      return (bytes(kingdom.name), kingdom.race, kingdom.numOfSoldiers,
-          kingdom.weaponLevel, kingdom.fortressLevel, kingdom.gold,
-          kingdom.commander, bytes(commanderName));
-    }
-
-    function getKingdom(uint _id) public view returns (string, uint8, uint, uint8, uint8, uint, uint, string) {
-      var kingdom = kingdoms[_id];
-      var commanderName = kingdoms[kingdom.commander].name;
-      return (kingdom.name, kingdom.race, kingdom.numOfSoldiers,
-          kingdom.weaponLevel, kingdom.fortressLevel, kingdom.gold,
+      return (kingdom.name, kingdom.race, kingdom.weaponLevel, kingdom.fortressLevel, kingdom.gold,
           kingdom.commander, commanderName);
     }
 
-    function getPersonnel(uint _id) public view returns (uint256, uint256, uint256) {
-      var kingdom = kingdoms[_id];
-      return (kingdom.numOfSoldiers, kingdom.numOfSpies, kingdom.numOfSentries);
+    function getPersonnel(uint _id) public view returns (uint256, uint256, uint256, uint256, uint256) {
+      var military = militaries[_id];
+      return (military.numOfSoldiers, military.numOfAttackSpecialists, military.numOfDefenseSpecialists,
+        military.numOfSpies, military.numOfSentries);
     }
 
     function getWeaponMultiplier() public view returns (uint8) {
@@ -152,13 +154,13 @@ contract KingdomFactory {
       return (kingdomOf[msg.sender]);
     }
 
-    function getMyKingdom() public view returns (string, uint8, uint, uint8, uint8, uint, uint, string) {
+    function getMyKingdom() public view returns (string, uint8, uint8, uint8, uint, uint, string) {
       uint256 id = kingdomOf[msg.sender];
       require(id > 0);
       return getKingdom(id);
     }
 
-    function getMyPersonnel() public view returns (uint256, uint256, uint256) {
+    function getMyPersonnel() public view returns (uint256, uint256, uint256, uint256, uint256) {
       uint256 id = kingdomOf[msg.sender];
       require(id > 0);
       return getPersonnel(id);
@@ -180,6 +182,7 @@ contract KingdomFactory {
       numOfOfficers[kingdoms[id].commander] -= 1;
       numOfOfficers[_commanderId] += 1;
       kingdoms[id].commander = _commanderId;
+      CommanderAssigned(id, _commanderId);
     }
 
     function ditchCommander() public {
@@ -213,7 +216,10 @@ contract KingdomFactory {
 
     function strikeAction(uint256 _id) public view returns (uint256) {
         var kingdom = kingdoms[_id];
-        return kingdom.numOfSoldiers * (100 + attackBonus[kingdom.race]) / 100 * (uint256(100 + weaponMultiplier) ** uint256(kingdom.weaponLevel)) / (100 ** uint256(kingdom.weaponLevel));
+        var military = militaries[_id];
+        return (military.numOfSoldiers + 2 * military.numOfAttackSpecialists)
+          * (100 + attackBonus[kingdom.race]) / 100
+          * (uint256(100 + weaponMultiplier) ** uint256(kingdom.weaponLevel)) / (100 ** uint256(kingdom.weaponLevel));
     }
 
     function myStrikeAction() public view returns (uint256) {
@@ -224,7 +230,10 @@ contract KingdomFactory {
 
     function defensiveAction(uint256 _id) public view returns (uint256) {
         var kingdom = kingdoms[_id];
-        return kingdom.numOfSoldiers * (100 + defenseBonus[kingdom.race]) / 100 * (uint256(100 + fortressMultiplier) ** uint256(kingdom.fortressLevel)) / (100 ** uint256(kingdom.fortressLevel));
+        var military = militaries[_id];
+        return (military.numOfSoldiers + 2 * military.numOfDefenseSpecialists)
+          * (100 + defenseBonus[kingdom.race]) / 100
+          * (uint256(100 + fortressMultiplier) ** uint256(kingdom.fortressLevel)) / (100 ** uint256(kingdom.fortressLevel));
     }
 
     function myDefensiveAction() public view returns (uint256) {
@@ -234,8 +243,9 @@ contract KingdomFactory {
     }
 
     function spyRating(uint256 _id) public view returns (uint256) {
-        var kingdom = kingdoms[_id];
-        return kingdom.numOfSpies * (100 + spyBonus[kingdom.race]) / 100;
+      var kingdom = kingdoms[_id];
+      var military = militaries[_id];
+      return military.numOfSpies * (100 + spyBonus[kingdom.race]) / 100;
     }
 
     function mySpyRating() public view returns (uint256) {
@@ -245,8 +255,9 @@ contract KingdomFactory {
     }
 
     function sentryRating(uint256 _id) public view returns (uint256) {
-        var kingdom = kingdoms[_id];
-        return kingdom.numOfSentries * (100 + sentryBonus[kingdom.race]) / 100;
+      var kingdom = kingdoms[_id];
+      var military = militaries[_id];
+      return military.numOfSentries * (100 + sentryBonus[kingdom.race]) / 100;
     }
 
     function mySentryRating() public view returns (uint256) {
@@ -353,28 +364,48 @@ contract KingdomFactory {
       var id = kingdomOf[msg.sender];
       require(id > 0);
       require (now - recruitTime[id] > recruitCooldown);
-      kingdoms[id].numOfSoldiers += 100 * (1 + numOfOfficers[id]);
+      militaries[id].numOfSoldiers += 100 * (1 + numOfOfficers[id]);
       recruitTime[id] = now;
       Recruit(id);
+    }
+
+    function trainAttackSpecialists(uint256 _count) public {
+      var id = kingdomOf[msg.sender];
+      require(id > 0);
+      var military = militaries[id];
+      require (military.numOfSoldiers >= _count);
+      military.numOfSoldiers -= _count;
+      military.numOfAttackSpecialists += _count;
+      TrainedAttackSpecialists(id, _count);
+    }
+
+    function trainDefenseSpecialists(uint256 _count) public {
+      var id = kingdomOf[msg.sender];
+      require(id > 0);
+      var military = militaries[id];
+      require (military.numOfSoldiers >= _count);
+      military.numOfSoldiers -= _count;
+      military.numOfDefenseSpecialists += _count;
+      TrainedDefenseSpecialists(id, _count);
     }
 
     function trainSpies(uint256 _count) public {
       var id = kingdomOf[msg.sender];
       require(id > 0);
-      var kingdom = kingdoms[id];
-      require (kingdom.numOfSoldiers >= _count);
-      kingdom.numOfSoldiers -= _count;
-      kingdom.numOfSpies += _count;
+      var military = militaries[id];
+      require (military.numOfSoldiers >= _count);
+      military.numOfSoldiers -= _count;
+      military.numOfSpies += _count;
       TrainedSpies(id, _count);
     }
 
     function trainSentries(uint256 _count) public {
       var id = kingdomOf[msg.sender];
       require(id > 0);
-      var kingdom = kingdoms[id];
-      require (kingdom.numOfSoldiers >= _count);
-      kingdom.numOfSoldiers -= _count;
-      kingdom.numOfSentries += _count;
+      var military = militaries[id];
+      require (military.numOfSoldiers >= _count);
+      military.numOfSoldiers -= _count;
+      military.numOfSentries += _count;
       TrainedSentries(id, _count);
     }
 }
