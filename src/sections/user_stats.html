@@ -1,0 +1,114 @@
+<table id="user_stats" width="100%" border="0" cellspacing="15" cellpadding="0">
+    <tr>
+        <td width="50%" valign="top">
+            <table width="100%" class="table_lines" cellspacing="0" cellpadding="6" border="0">
+                <tr>
+                    <th colspan="2">User Stats</th>
+                </tr>
+                <tr>
+        <td><b>Name:</b></td>
+        <td class="name"></td>
+    </tr>
+    <tr>
+        <td><b>Commander:</b></td>
+        <td><a class="commander" href=""></a></td>
+        <!--<script>
+            print('HI');
+        </script>-->
+    </tr>
+    <tr>
+        <td><b>Alliances:</b></td>
+        <td><b><a href="alliances.php?id=21613">La Cosa Nostra</a></b> (Primary)</td>
+    <tr>
+        <td><b>Race:</b></td>
+        <td class="race">Humans</td>
+    </tr>
+    <tr>
+        <td><b>Rank:</b></td>
+        <td>116</td>
+    </tr>
+    <tr>
+        <td><b>Highest Rank:</b></td>
+        <td>15 / 1 month ago</td>
+    </tr>
+    <tr>
+        <td><b>Army Size:</b></td>
+        <td class="numOfSoldiers">6,861,348</td>
+    </tr>
+    <tr>
+        <td><b>Army Morale:</b></td>
+        <td>6,656</td>
+    </tr>
+    <tr>
+        <td><b>Fortifications:</b></td>
+        <td class="fortressLevel">Hand of God</td>
+    </tr>
+    <tr>
+        <td colspan="2" align="center"></td>
+    </tr>
+    <tr>
+        <td><b>Buddy List Status:</b></td>
+        <td valign="middle">None</td>
+    </tr>
+    <tr>
+        <td colspan="2" align="center">
+            <form action="addbuddy.php" method="post">
+                <input type="hidden" name="user_id" value="4489493">
+                    Recognize player as
+                    <select name="buddy_type"><option label="none" value="none">none</option>
+                        <option label="neutral" value="neutral">neutral</option>
+                        <option label="friend" value="friend">friend</option>
+                        <option label="enemy" value="enemy">enemy</option>
+                        <option label="ignored" value="ignored">ignored</option>
+                    </select> &nbsp;
+                <input type="submit" value="Change Status">
+            </form>
+        </td>
+    </tr>
+</table>
+<br>
+<table width="100%" cellspacing="10">
+    <tr>
+        <td width="25%" align="center">
+            <form action="App:attack()">
+                <input type="hidden" name="defender_id" value="4489493">
+                <input type="hidden" name="attack_type" value="attack">
+                <input style="width: 100%" name="attackbut" id="attackButton" onClick="this.value='Attacking..'; this.attackbut.disabled=true; this.submit();" type="submit" value="Attack Now!">
+                <input type="hidden" name="turing" value="vckfb">
+            </form>
+        </td>
+        <td width="25%" align="center">
+            <form action="attack.php" method="post" name="attack">
+                <input type="hidden" name="defender_id" value="4489493">
+                <input type="hidden" name="attack_type" value="raid">
+                <input style="width: 100%" name="attackbut" onClick="this.attackbut.value='Raiding..'; this.attackbut.disabled=true; this.submit();" type="submit" value="Raid Now!">
+                <input type="hidden" name="turing" value="vckfb">
+            </form>
+        </td>
+        <td width="25%" align="center">
+            <form action="attack.php#sab" method="get">
+              <input type="hidden" name="id" value="4489493">
+                <input style="width: 100%" type="submit" value="Sabotage!">
+            </form>
+        </td>
+        <td width="25%" align="center">
+            <form action="attack.php" method="post" name="spyr">
+                <input type="hidden" name="mission_type" value="recon">
+                <input type="hidden" name="defender_id" value="4489493">
+                <input style="width: 100%" type="submit" name="spyrbut" onclick="this.spyrbut.value='Spying..'; this.spyrbut.disabled=true; this.submit();" value="Recon Now!">
+                <input type="hidden" name="turing" value="vckfb">
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" align="center">
+            <form action="writemail.php" method="get">
+                <input type="hidden" name="to" value="4489493">
+                <input style="width: 100%" type="submit" value="Send Message">
+            </form>
+        </td>
+        <td colspan="2" align="center">
+            <button id="assignButton" style="padding: 2px; width: 100%;"> Make chosen my commander!</button>
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,31 @@
+<table id="officers" class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0">
+    <tr>
+        <th colspan="4" align="center">Officers</th>
+    </tr>
+
+    <tr>
+        <th class="subh" align="left">Name</th>
+        <th class="subh" align="right">Rank</th>
+        <th class="subh" align="center" colspan="2">Army</th>
+    </tr>
+
+    <tr class="nav">
+        <td>&nbsp;</td>
+        <td colspan="2" align="center">25 officers total | page 1 of 3
+            <br /> officers logged in today (x )</td>
+        <td align="right"><a href="stats.php?id=4489493&start=10">Next &gt;&gt;</a></td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+    function officers_nav(){
+        $('table.officers tr.nav a').click(function(){
+            $.get($(this).attr('href'), function(data){
+                $('table.officers').replaceWith(data)
+                officers_nav()
+            })
+            return false;
+        })
+    }
+    officers_nav()
+</script>

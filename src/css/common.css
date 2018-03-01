@@ -1,0 +1,79 @@
+th.subhr {
+	background-color: BLACK;
+	border-right: #888888 1px solid;;
+	border-left: none;
+	border-top: none;
+	border-bottom: #888888 1px solid;
+	border-collapse: collapse;
+}
+th.subh {
+	background-color: BLACK;
+	border-left: none;
+	border-right: none;
+	border-top: none;
+	border-bottom: #888888 1px solid;
+	border-collapse: collapse;
+}
+input, textarea, button {
+	color: WHITE;
+	font-size: 10pt;
+	font-family: "Verdana";
+	font-weight: normal;
+	background-color: #000000;
+	border: #888888 1px solid;
+}
+select {
+	color: WHITE;
+	background-color: BLACK;
+	border: WHITE 1px solid;
+}
+input.login_input {
+	color: #444444;
+	background-color: #DDDDDD;
+	border: #AAAAAA 1px solid;
+	padding: 2px;
+}
+td {
+	color: #FFFFFF;
+	font-size: 10pt;
+	font-family: "Verdana";
+	border-collapse: collapse;
+}
+table.small td {
+	font-size:8pt;
+	border-collapse: collapse;
+}
+table.small input {
+	width: 80px;
+	height: 20px;
+	font-size: 8pt;
+	border-collapse: collapse;
+}
+table.table_lines td {
+	border-bottom: 1px #333333 solid;
+	padding-top: 9;
+	padding-bottom: 10;
+	border-collapse: collapse;
+}
+td.menu_cell {
+	vertical-align: top;
+	width: 137px;
+	border-collapse: collapse;
+}
+td.menu_cell_repeater {
+	width: 137px;
+	background-image: url("/images/menubar/login_bg.jpg");
+	background-repeat: no-repeat;
+	border-collapse: collapse;
+}
+td.menu_cell_repeater_vert {
+	width: 137px;
+	background-image: url("/images/menubar/verticalrepeater.gif");
+	background-repeat: repeat-y;
+	border-collapse: collapse;
+}
+img {
+	border: 0px;
+}
+
+

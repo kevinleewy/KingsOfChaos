@@ -1,0 +1,70 @@
+<style type="text/css">
+    table.personnel th { cursor: pointer }
+</style>
+<table id="personnel" class="table_lines personnel" width="100%" cellspacing="0" cellpadding="6" border="0">
+    <tr>
+        <th colspan="3"><span style="float: right" class="expando">-</span>Personnel</th>
+    </tr>
+    <tr>
+        <td><b>Trained Attack Soldiers</b></td>
+        <td class="trainedAttackSoldiers" align="right">0</td>
+        <td align="right">[ <a href="train.html">train more</a> ]</td>
+    </tr>
+    <tr>
+        <td><b>Trained Attack Mercenaries</b></td>
+        <td class="trainedAttackMercenaries" align="right">0</td>
+        <td align="right">[ <a href="mercs.html">hire more</a> ]</td>
+    </tr>
+    <tr>
+        <td><b>Trained Defense Soldiers</b></td>
+        <td class="trainedDefenseSoldiers" align="right">0</td>
+        <td align="right">[ <a href="train.html">train more</a> ]</td>
+    </tr>
+    <tr>
+        <td><b>Trained Defense Mercenaries</b></td>
+        <td class="trainedDefenseMercenaries" align="right">0</td>
+        <td align="right">[ <a href="mercs.html">hire more</a> ]</td>
+    </tr>
+    <tr>
+        <td><b>Untrained Soldiers</b></td>
+        <td class="untrainedSoldiers" align="right">0</td>
+        <td align="right">[ <a href="base.html">recruit more</a> ]</td>
+    </tr>
+    <tr>
+        <td><b>Untrained Mercenaries</b></td>
+        <td class="untrainedMercenaries" align="right">0</td>
+        <td align="right">[ <a href="mercs.html">hire more</a> ]</td>
+    </tr>
+    <tr>
+        <td class="subh"><b>Spies</b></td>
+        <td class="spies" class="subh" align="right">0</td>
+        <td align="right">[ <a href="train.html">train more</a> ]</td>
+    </tr>
+    <tr>
+        <td class="subh"><b>Sentries</b></td>
+        <td class="sentries" class="subh" align="right">0</td>
+        <td align="right">[ <a href="train.html">train more</a> ]</td>
+    </tr>
+    <tr>
+        <td><b>Army Morale</b></td>
+        <td class="armyMorale" align="right">0</td>
+        <td align="right">[ <a href="recruit.html">recruit more</a> ]</td>
+    </tr>
+    <tr>
+        <td><b>Total Fighting Force</b></td>
+        <td class="totalFightingForce" align="right">0</td>
+        <td align="right">[ <a href="recruit.html">recruit more</a> ]</td>
+    </tr>
+    <tr>
+        <td colspan="3" align="center" style="display:none"><span class="personnelCount">0</span> soldiers</td>
+    </tr>
+</table>
+<script type="text/javascript">
+    $('table.personnel th').click(function(){
+        $(this).parents('table:first').find('tr td').toggle()
+        if ($(this).parents('table:first').find('tr td:first').is(':visible'))
+            $(this).find('span.expando').html('-')
+        else
+            $(this).find('span.expando').html('+')
+    }).click()
+</script>

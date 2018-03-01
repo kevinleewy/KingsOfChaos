@@ -1,0 +1,19 @@
+th {
+	background-color: #330000;
+	border: #FF0000 1px solid;
+	color: #FFFFFF;
+	font-size: 10pt;
+	font-weight: bold;
+	font-family: "Verdana";
+	border-collapse: collapse;
+}
+a {
+	font-size: 10pt;
+	color: red;
+	text-decoration: none;
+}
+hr {
+	color: #FF0000;
+	height: 1px;
+	width: 75%;
+}

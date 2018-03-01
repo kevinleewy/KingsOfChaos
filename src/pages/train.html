@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <title>Kings of Chaos :: Training Grounds</title>
+        <link rel="icon" href="../images/favicon.ico" />
+        <link rel="shortcut icon" href="../images/favicon.ico" />
+        <link href="../css/common.css" rel="stylesheet" type="text/css" />
+        <link href="../css/main.css" rel="stylesheet" type="text/css" />
+        <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+        <!--<link type="text/css" href="/inviter/res/style.css" rel="stylesheet" />-->
+        
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
+        <!-- <script src="/js/jquery.min.js" type="text/javascript"></script> -->
+
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="../js/bootstrap.min.js"></script>
+        <script src="../js/web3.min.js"></script>
+        <script src="../js/truffle-contract.js"></script>
+        <script src="../js/train.js"></script>
+
+        <script type="text/javascript" src="http://w.sharethis.com/widget/?tabs=web%2Cpost&amp;charset=utf-8&amp;style=rotate&amp;publisher=61b27ec8-6172-4261-a2f9-f5eed4bfffcb&amp;linkfg=%23545e7d"></script>
+        <script src="//ads.lfstmedia.com/getad?site=265031" type="text/javascript"></script>
+        <META name="verify-v1" content="W8cx8aSLkZX2ZC64sipZmhlBY149culcmvlJ0orWkAA=" />
+        <!--
+        <script language="javascript">
+
+            function newcap()
+            {
+                thesrc = "/chk/turing.image.php";
+                newsrc = thesrc+"?"+Math.round(Math.random()*100000);
+
+                document.getElementById('curcap').src = newsrc;
+
+                if (document.getElementById('curcap2'))
+                    document.getElementById('curcap2').src = newsrc;
+                if (document.getElementById('curcap3'))
+                    document.getElementById('curcap3').src = newsrc;
+            }
+            function openchatwin() {
+                    var popurl="http://chat.cyanide-x.net:7778";
+                    winpops=window.open(popurl,"","width=750,height=550");
+            }
+
+            function checksize() {
+                var myWidth = 0, myHeight = 0;
+                if( typeof( window.innerWidth ) == 'number' ) {
+                    //Non-IE
+                    myWidth = window.innerWidth;
+                    myHeight = window.innerHeight;
+                } else if( document.documentElement &&
+                        ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+                    //IE 6+ in 'standards compliant mode'
+                    myWidth = document.documentElement.clientWidth;
+                    myHeight = document.documentElement.clientHeight;
+                } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+                    //IE 4 compatible
+                    myWidth = document.body.clientWidth;
+                    myHeight = document.body.clientHeight;
+                }
+
+                if (myWidth != '' || myHeight != '')
+                    document.write("<img width=1 height=1 src=\"/setres.php?height=" + myHeight + "&width=" + myWidth + "\">");
+            }
+
+            if (top.frames.length > 0)
+                top.location = self.location;
+            if (top != self)
+                top.location=self.location;
+
+            document.domain = 'localhost:3000';
+            
+        </script>
+        -->
+        <META NAME="keywords" CONTENT="kingsofchaos, chaos, elves, humans, dwarves, orcs, rpg, mmorpg, role playing, game, online game, text based game, armory, mercenaries, spy, attack, army, battle, recruit, spies, spy skill, weapons, messaging, sabotage, recon, intelligence, pnp, mud, games, stockade, free, browser game">
+        <META NAME="description" CONTENT="Build your army, conquer your enemies, become a King of Chaos!">
+        <META NAME="author" CONTENT="Kings of Chaos">
+
+        <script language="javascript" type="text/javascript">
+            function checkCR(evt) {
+              var evt = (evt) ? evt : ((event) ? event : null);
+              var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+              if ((evt.keyCode == 13) && (node.type=="text") && (node.id != 'recaptcha_response_field') && (node.id != "box")) {
+              return false;
+            }
+            }
+            document.onkeypress = checkCR;
+        </script>
+    </head>
+    <body bgcolor="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" text="#FFFFFF" onload="if (box = document.getElementById('box')) box.focus();">
+        <span style="position: absolute; right: 2; top: 2; z-index:10;font-size:x-small; color:#999999;"></span>
+        
+        <div id="header"></div>
+
+        <table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+                <td width="140" class="menu_cell" style="padding-left: 10px;" valign="top">
+                    <p>
+
+                    <!-- Sidebar section -->
+                    <div id="sidebar"></div>
+          
+                    <center>
+                        <p>
+                        <a href="http://www.spreadfirefox.com/?q=affiliates&amp;id=8415&amp;t=71"><img border="0" alt="Get Firefox!" title="Get Firefox!" src="/images/safer.gif"/></a><br>
+                        <p>
+                        <!--<script type="text/javascript" language="javascript1.2">
+                            checksize();
+                        </script>-->
+                    </center>
+                </td>
+                <td style="padding-left: 10px; padding-top: 5px; padding-right: 5px;" valign="top" align="left" class="content">
+                    <table class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0">
+                        <tr><th><span class="close" style="float: right; cursor: pointer" onclick="document.location = '/toggle_advisor.php'; return false">x</span>New User Advisor</th></tr>
+                        <tr><td>
+                            This is the Training and Research center. Here you may train your soldiers to be one of four
+                            types.
+                            <ul>
+                                <li>Attack Soldiers count double towards your attack strength</li>
+                                <li>Defense Soldiers count double towards your defensive strength</li>
+                                <li>Spies enable you to launch Recon and Sabotage missions</li>
+                                <li>Sentries enable you to intercept enemy Recon and Sabotage missions</li>
+                                <li>Specialists only contribute in their area of expertise (so an Attack soldier offers you no defensive protection at all, etc.)</li>
+                            </ul>
+
+                            <p>You may also upgrade your covert skill, which serves as a multipler to
+                            your Spy/Sentry strength.
+                            <p>If you increase your conscription rate, more soldiers will join your army per day.<p>
+                            <p>Your Economy helps determine your income. The more developed, the more effective your labor force and the more income you will receive per turn.<p>
+                            <p>Researching new technology via Technological Development is one of the most important upgrades you can do. Each time you research a new technology, all your stats (attack, defend, spy, and sentry) will increase! Initialy your Technological Multiplier is at x1, but it will increase with each upgrade.<p>
+                        </td></tr>
+                    </table>
+                    <br><br>
+                    <h3>Training</h3>
+
+                    <table width="100%">
+                        <tr>
+                            <td width="50%" valign="top" style="padding-right: 25px;">
+                                <div id="personnel"></div>
+                                <br>
+                            </td>
+                            <td width="50%" valign="top">
+                                <table id="trainTable" class="table_lines" border="0" cellspacing="0" cellpadding="6" width="100%">
+                                    <tr>
+                                        <th colspan="4" align="center">Train Your Troops</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="subh" align="left">Training Program</th>
+                                        <th class="subh" align="right">Cost Per Unit</th>
+                                        <th class="subh">Quantity</th>
+                                        <th class="subh">Train</th>
+                                    </tr>
+                                    <tr>
+                                        <form action="App:trainAttack()">
+                                            <td>Attack Specialist</td>
+                                            <td align="right">2,000 Gold</td>
+                                            <td align="center"><input type="text" name="train[attacker]" id="attackQuantity" size="3" value="0"></td>
+                                            <td align="center">
+                                                <input id="trainAttackButton" type="submit" value="Train!">
+                                            </td>
+                                        </form>
+                                    </tr>
+                                    <tr>
+                                        <form action="App:trainDefense()">
+                                            <td>Defense Specialist</td>
+                                            <td align="right">2,000 Gold</td>
+                                            <td align="center"><input type="text" name="train[defender]" id="defenseQuantity" size="3" value="0"></td>
+                                            <td align="center">
+                                                <input id="trainDefenseButton" type="submit" value="Train!">
+                                            </td>
+                                        </form>
+                                    </tr>
+                                    <tr>
+                                        <form action="App:trainSpies()">
+                                            <td>Spy</td>
+                                            <td align="right">3,500 Gold</td>
+                                            <td align="center"><input type="text" name="train[spy]" id="spiesQuantity" size="3" value="0"></td>
+                                            <td align="center">
+                                                <input id="trainSpiesButton" type="submit" value="Train!">
+                                            </td>
+                                        </form>
+                                    </tr>
+                                    <tr>
+                                        <form action="App:trainSentries()">
+                                            <td>Sentry</td>
+                                            <td align="right">3,500 Gold</td>
+                                            <td align="center"><input type="text" name="train[sentry]" id="sentriesQuantity" size="3" value="0"></td>
+                                            <td align="center">
+                                                <input id="trainSentriesButton" type="submit" value="Train!">
+                                            </td>
+                                        </form>
+                                    </tr>
+                                    <tr>
+                                        <form action="App:reassignAttack()">
+                                            <td>Reassign Attack Specialist</td>
+                                            <td align="right">0 Gold</td>
+                                            <td align="center"><input type="text" name="train[unattacker]" id="unAttackQuantity" size="3" value="0"></td>
+                                            <td align="center">
+                                                <input id="reassignAttackButton" type="submit" value="Train!">
+                                            </td>
+                                        </form>
+                                    </tr>
+                                    <tr>
+                                        <form action="App:reassignDefense()">
+                                            <td>Reassign Defense Specialist</td>
+                                            <td align="right">0 Gold</td>
+                                            <td align="center"><input type="text" name="train[undefender]" id="unDefenseQuantity" size="3" value="0"></td>
+                                            <td align="center">
+                                                <input id="reassignDefenseButton" type="submit" value="Train!">
+                                            </td>
+                                        </form>
+                                    </tr>
+                                </table>
+                                <br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top" style="padding-right: 25px;">
+                                <form method="post" action="train.php">
+                                    <table class="table_lines" border="0" cellspacing="0" cellpadding="6" width="100%">
+                                        <tr>
+                                            <th colspan=2 align="center">Upgrade Covert Skill</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="subh" align="left">Current Covert Skill</th>
+                                            <th class="subh">Upgrade</th>
+                                        </tr>
+                                        <tr>
+                                            <td>Level 4</td>
+                                            <td align="center">
+                                                <input type="submit" value="62,900 Gold (+60%)" size="5">
+                                                <input type="hidden" name="upgrade_spy" value="yes">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <input type="hidden" name="hash" value="">
+                                </form>
+                            </td>
+                            <td>
+                                <form method="post" action="train.php">
+                                    <table class="table_lines" border="0" cellspacing="0" cellpadding="6" width="100%">
+                                        <tr>
+                                            <th colspan=2 align="center">Increase Conscription</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="subh" align="left">Current Conscription Rate</th>
+                                            <th class="subh">Upgrade to 5 per day</th>
+                                        </tr>
+                                        <tr>
+                                            <td>0 soldiers per day</td>
+                                            <td align="center">
+                                                <input type="submit" value="3,000 Gold" size="5">
+                                                <input type="hidden" name="upgrade_prod" value="yes">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <input type="hidden" name="hash" value="">
+                                </form>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top" style="padding-right: 25px;">
+                                <form method="post" action="train.php">
+                                    <table class="table_lines" border="0" cellspacing="0" cellpadding="6" width="100%">
+                                        <tr>
+                                            <th colspan=2 align="center">Economic Development</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="subh" align="left">Current Economy</th>
+                                            <th class="subh">Research Hunting<br /> (100 gold per turn)</th>
+                                        </tr>
+                                        <tr>
+                                            <td>None (0 gold per turn)</td>
+                                            <td align="center">
+                                                <input type="submit" value="300 Experience" size="5">
+                                                <input type="hidden" name="upgrade_economy" value="yes">
+                                            </td>
+                                        </tr>
+                                  </table>
+                                <input type="hidden" name="hash" value="">
+                              </form>
+                            </td>
+                            <td valign="top" style="padding-right: 25px;">
+                                <form method="post" action="train.php">
+                                    <table class="table_lines" border="0" cellspacing="0" cellpadding="6" width="100%">
+                                        <tr>
+                                          <th colspan=2 align="center">Technological Development</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="subh" align="left">Current Technologies</th>
+                                            <th class="subh">
+                                                <input type="submit" value="Research! (350 Experience)">
+                                                <input type="hidden" name="upgrade_tech" value="yes">
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td colspan = "2">Spear  (x 1.05 strength)</td>
+                                        </tr>
+                                    </table>
+                                    <input type="hidden" name="hash" value="">
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div id="footer"></div>
+
+        <!-- Start Quantcast tag -->
+        <script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+        <script type="text/javascript">_qacct="p-a6NrObxziz_36";quantserve();</script>
+        <noscript>
+        <a href="http://www.quantcast.com/p-a6NrObxziz_36" target="_blank"><img src="http://pixel.quantserve.com/pixel/p-a6NrObxziz_36.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/></a>
+        </noscript>
+        <!-- End Quantcast tag -->
+        <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+        </script>
+        <script type="text/javascript">
+            _uacct = "UA-75146-1";
+            urchinTracker();
+        </script>
+
+    </body>
+</html>

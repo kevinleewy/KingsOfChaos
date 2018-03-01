@@ -1,0 +1,40 @@
+<form method=GET action=message_officers.php>
+    <input type="submit" value="Send Notice to All Direct Officers" style="width: 100%; font-size: 11pt; padding: 3px">
+</form>
+<form method=GET action=pm_officers.php>
+    <input type="submit" value="PM All Direct Officers" style="width: 100%; font-size: 11pt; padding: 3px">
+</form>
+
+<table id="officers" class="table_lines officers" width="100%" cellspacing="0" cellpadding="6" border="0">
+    <tr>
+        <th colspan="6" align="center">Officers</th>
+    </tr>
+    <tr>
+        <th class="subh" align="left">Name</th>
+        <th class="subh" align="right">Rank</th>
+        <th class="subh" align="center" colspan="2">Army</th>
+        <th class="subh" align="right">Morale</th>
+        <th class="subh">Unique Link</th>
+    </tr>
+
+    <tr class="nav">
+        <td>&nbsp;</td>
+        <td colspan="4" align="center">0 officers total | page 1 of 1
+            <br />0 officers logged in today (x 1)
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+<script type="text/javascript">
+    function officers_nav(){
+        $('table.officers tr.nav a').click(function(){
+            $.get($(this).attr('href'), function(data){
+                $('table.officers').replaceWith(data)
+
+                officers_nav()
+            })
+            return false;
+        })
+    }
+    officers_nav()
+</script>
