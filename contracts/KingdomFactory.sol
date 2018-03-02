@@ -3,15 +3,20 @@ pragma solidity ^0.4.17;
 contract KingdomFactory {
 
     event NewKingdom(uint kingdomId, string name, uint race);
+    event ChangedRace(uint kingdomId, uint race);
     event UpgradeWeapon(uint kingdomId, uint weaponLevel);
     event UpgradeFortress(uint kingdomId, uint fortressLevel);
+    event UpgradeCovert(uint kingdomId, uint covertLevel);
     event BattleCompleted(uint battleId);
     event Recruit(uint kingdomId);
     event CommanderAssigned(uint kingdomId, uint commanderId);
     event TrainedAttackSpecialists(uint kingdomId, uint count);
     event TrainedDefenseSpecialists(uint kingdomId, uint count);
+    event ReassignedAttackSpecialists(uint kingdomId, uint count);
+    event ReassignedDefenseSpecialists(uint kingdomId, uint count);
     event TrainedSpies(uint kingdomId, uint count);
     event TrainedSentries(uint kingdomId, uint count);
+    event PurchasedMercs(uint id, uint attackMercsCount, uint defenseMercsCount);
 
     Kingdom[] private kingdoms;
     Military[] private militaries;
@@ -24,6 +29,12 @@ contract KingdomFactory {
 
     uint8 private weaponMultiplier = 30;
     uint8 private fortressMultiplier = 25;
+    uint8 private covertMultiplier = 60;
+
+    uint8 private weaponMaxLevel = 14;
+    uint8 private fortressMaxLevel = 16;
+    uint8 private covertMaxLevel = 15;
+
     uint256 private recruitCooldown = 5 minutes; // 6 hours;
 
     uint8[] private incomeBonus     = [  0, 30, 15,  0,  0,  0];
@@ -39,6 +50,7 @@ contract KingdomFactory {
       uint8 race; //0 - divine; 1 - human; 2 - dwarves; 
       uint8 weaponLevel;
       uint8 fortressLevel;
+      uint8 covertLevel;
       uint256 gold;
       uint256 commander;
     }
@@ -46,7 +58,9 @@ contract KingdomFactory {
     struct Military {
       uint256 numOfSoldiers;
       uint256 numOfAttackSpecialists;
+      uint256 numOfAttackMercs;
       uint256 numOfDefenseSpecialists;
+      uint256 numOfDefenseMercs;
       uint256 numOfSpies;
       uint256 numOfSentries;      
     }
@@ -68,16 +82,15 @@ contract KingdomFactory {
     }
 
     function KingdomFactory() public {
-      _createKingdom("God", 0, 14, 16, 1000000, 10000, 10000, 0);
-      _createKingdom("God\'s Right Hand", 0, 12, 14, 100000, 1000, 1000, 0);
-      _createKingdom("God\'s Left Hand", 0, 12, 14, 100000, 1000, 1000, 0);
+      _createKingdom("God", 0, [14, 16, 15], [uint(1000000), uint(200000), uint(200000), uint(10000), uint(10000)], 0);
+      _createKingdom("God\'s Right Hand", 0, [12, 14, 10], [uint(100000), uint(20000), uint(20000), uint(1000), uint(1000)], 0);
+      _createKingdom("God\'s Left Hand", 0, [12, 14, 10], [uint(100000), uint(20000), uint(20000), uint(1000), uint(1000)], 0);
     }
 
-    function _createKingdom(string _name, uint _race, uint8 weaponLevel, uint8 fortressLevel,
-      uint _numOfSoldiers, uint _numOfSpies, uint _numOfSentries, uint _commander) private returns (uint){
-
-      uint id = kingdoms.push(Kingdom(_name, uint8(_race), weaponLevel, fortressLevel, 0, _commander)) - 1;
-      militaries.push(Military(_numOfSoldiers, 0, 0, _numOfSpies, _numOfSentries));
+    function _createKingdom(string _name, uint8 _race, uint8[3] _technologyLevel, uint[5] _militaryCount, uint _commander)
+      private returns (uint){
+      uint id = kingdoms.push(Kingdom(_name, _race, _technologyLevel[0], _technologyLevel[1], _technologyLevel[2], 0, _commander)) - 1;
+      militaries.push(Military(_militaryCount[0], _militaryCount[1], 0, _militaryCount[2], 0, _militaryCount[3], _militaryCount[4]));
       kingdomToOwner[id] = msg.sender;
       kingdomOf[msg.sender] = id;
       numOfOfficers[_commander] += 1;
@@ -87,30 +100,30 @@ contract KingdomFactory {
 
     function createNewKingdom(string _name, uint _race, uint _commanderId) public returns (uint){
       require(kingdomOf[msg.sender] == 0);
-      return _createKingdom(_name, _race, 0, 0, 0, 0, 0, _commanderId);
+      require(_race >= 1 && _race <= 5);
+      return _createKingdom(_name, uint8(_race), [0, 0, 0], [uint(0), uint(0), uint(0), uint(0), uint(0)], _commanderId);
     }
 
-    function getKingdom(uint _id) public view returns (string, uint8, uint8, uint8, uint, uint, string) {
+    function getKingdom(uint _id) public view returns (string, uint8, uint8[3], uint, uint, string) {
       var kingdom = kingdoms[_id];
       var commanderName = kingdoms[kingdom.commander].name;
-      return (kingdom.name, kingdom.race, kingdom.weaponLevel, kingdom.fortressLevel, kingdom.gold,
+      return (kingdom.name, kingdom.race, [kingdom.weaponLevel, kingdom.fortressLevel, kingdom.covertLevel], kingdom.gold,
           kingdom.commander, commanderName);
     }
 
-    function getPersonnel(uint _id) private view returns (uint256[5]) {
+    function getPersonnel(uint _id) private view returns (uint256[7]) {
       var military = militaries[_id];
-      return [military.numOfSoldiers, military.numOfAttackSpecialists, military.numOfDefenseSpecialists,
-        military.numOfSpies, military.numOfSentries];
+      return [military.numOfSoldiers, military.numOfAttackSpecialists, military.numOfAttackMercs, military.numOfDefenseSpecialists,
+        military.numOfDefenseMercs, military.numOfSpies, military.numOfSentries];
     }
 
-    function spyOnPersonnel(uint _targetId) public view returns (bool, uint256[5]) {
+    function spyOnPersonnel(uint _targetId) public view returns (bool, uint256[7]) {
       uint256 senderId = kingdomOf[msg.sender];
       require(senderId > 0);
-      if(senderId == _targetId || spyRating(senderId) > sentryRating(_targetId)){
-        //var m1, m2, m3, m4, m5 = getPersonnel(_targetId);
+      if(senderId == _targetId || senderId == kingdoms[_targetId].commander || spyRating(senderId) > sentryRating(_targetId)){
         return (true, getPersonnel(_targetId));
       }
-      return (false, [uint(0), uint(0), uint(0), uint(0), uint(0)]);
+      return (false, [uint(0), uint(0), uint(0), uint(0), uint(0), uint(0), uint(0)]);
     }
 
     function getWeaponMultiplier() public view returns (uint8) {
@@ -168,13 +181,13 @@ contract KingdomFactory {
       return (kingdomOf[msg.sender] == _id);
     }
 
-    function getMyKingdom() public view returns (string, uint8, uint8, uint8, uint, uint, string) {
+    function getMyKingdom() public view returns (string, uint8, uint8[3], uint, uint, string) {
       uint256 id = kingdomOf[msg.sender];
       require(id > 0);
       return getKingdom(id);
     }
 
-    function getMyPersonnel() public view returns (uint256[5]) {
+    function getMyPersonnel() public view returns (uint256[7]) {
       uint256 id = kingdomOf[msg.sender];
       require(id > 0);
       return getPersonnel(id);
@@ -207,11 +220,20 @@ contract KingdomFactory {
       return (kingdoms[kingdomOf[msg.sender]].commander == _id);
     }
 
+    function changeRace(uint8 _race) public {
+      uint256 id = kingdomOf[msg.sender];
+      require(id > 0);
+      var kingdom = kingdoms[id];
+      require(kingdom.race != _race && _race >= 1 && _race <= 5);
+      kingdom.race = _race;
+      ChangedRace(id, _race);
+    }
+
     function upgradeWeapon() public {
       uint256 id = kingdomOf[msg.sender];
       require(id > 0);
       uint8 level = kingdoms[id].weaponLevel;
-      require(level < 14);
+      require(level < weaponMaxLevel);
       level += 1;
       kingdoms[id].weaponLevel = level;
       UpgradeWeapon(id, level);
@@ -222,16 +244,27 @@ contract KingdomFactory {
       uint256 id = kingdomOf[msg.sender];
       require(id > 0);
       uint8 level = kingdoms[id].fortressLevel;
-      require(level < 16);
+      require(level < fortressMaxLevel);
       level += 1;
       kingdoms[id].fortressLevel = level;
       UpgradeFortress(id, level);
     }
 
+    function upgradeCovert() public {
+      require(kingdomOf[msg.sender] != 0);
+      uint256 id = kingdomOf[msg.sender];
+      require(id > 0);
+      uint8 level = kingdoms[id].covertLevel;
+      require(level < covertMaxLevel);
+      level += 1;
+      kingdoms[id].covertLevel = level;
+      UpgradeCovert(id, level);
+    }
+
     function strikeAction(uint256 _id) public view returns (uint256) {
         var kingdom = kingdoms[_id];
         var military = militaries[_id];
-        return (military.numOfSoldiers + 2 * military.numOfAttackSpecialists)
+        return (military.numOfSoldiers + 2 * (military.numOfAttackSpecialists + military.numOfAttackMercs))
           * (100 + attackBonus[kingdom.race]) / 100
           * (uint256(100 + weaponMultiplier) ** uint256(kingdom.weaponLevel)) / (100 ** uint256(kingdom.weaponLevel));
     }
@@ -245,7 +278,7 @@ contract KingdomFactory {
     function defensiveAction(uint256 _id) public view returns (uint256) {
         var kingdom = kingdoms[_id];
         var military = militaries[_id];
-        return (military.numOfSoldiers + 2 * military.numOfDefenseSpecialists)
+        return (military.numOfSoldiers + 2 * (military.numOfDefenseSpecialists) + military.numOfDefenseMercs)
           * (100 + defenseBonus[kingdom.race]) / 100
           * (uint256(100 + fortressMultiplier) ** uint256(kingdom.fortressLevel)) / (100 ** uint256(kingdom.fortressLevel));
     }
@@ -259,7 +292,8 @@ contract KingdomFactory {
     function spyRating(uint256 _id) public view returns (uint256) {
       var kingdom = kingdoms[_id];
       var military = militaries[_id];
-      return military.numOfSpies * (100 + spyBonus[kingdom.race]) / 100;
+      return military.numOfSpies * (100 + spyBonus[kingdom.race]) / 100
+        * (uint256(100 + covertMultiplier) ** uint256(kingdom.covertLevel)) / (100 ** uint256(kingdom.covertLevel));
     }
 
     function mySpyRating() public view returns (uint256) {
@@ -271,7 +305,8 @@ contract KingdomFactory {
     function sentryRating(uint256 _id) public view returns (uint256) {
       var kingdom = kingdoms[_id];
       var military = militaries[_id];
-      return military.numOfSentries * (100 + sentryBonus[kingdom.race]) / 100;
+      return military.numOfSentries * (100 + sentryBonus[kingdom.race]) / 100
+        * (uint256(100 + covertMultiplier) ** uint256(kingdom.covertLevel)) / (100 ** uint256(kingdom.covertLevel));
     }
 
     function mySentryRating() public view returns (uint256) {
@@ -421,5 +456,34 @@ contract KingdomFactory {
       military.numOfSoldiers -= _count;
       military.numOfSentries += _count;
       TrainedSentries(id, _count);
+    }
+
+    function reassignAttackSpecialists(uint256 _count) public {
+      var id = kingdomOf[msg.sender];
+      require(id > 0);
+      var military = militaries[id];
+      require (military.numOfAttackSpecialists >= _count);
+      military.numOfSoldiers += _count;
+      military.numOfAttackSpecialists -= _count;
+      ReassignedAttackSpecialists(id, _count);
+    }
+
+    function reassignDefenseSpecialists(uint256 _count) public {
+      var id = kingdomOf[msg.sender];
+      require(id > 0);
+      var military = militaries[id];
+      require (military.numOfDefenseSpecialists >= _count);
+      military.numOfSoldiers += _count;
+      military.numOfDefenseSpecialists -= _count;
+      ReassignedDefenseSpecialists(id, _count);
+    }
+
+    function buyMercs(uint256 _attackMercsCount, uint256 _defenseMercsCount) public {
+      var id = kingdomOf[msg.sender];
+      require(id > 0);
+      var military = militaries[id];
+      military.numOfAttackMercs += _attackMercsCount;
+      military.numOfDefenseMercs += _defenseMercsCount;
+      PurchasedMercs(id, _attackMercsCount, _defenseMercsCount);
     }
 }

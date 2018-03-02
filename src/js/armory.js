@@ -57,18 +57,18 @@ App = {
     }).then(function() {
       kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
         var sidebar_user_stats = $('#sidebar_user_stats');
-        gold = numberWithCommas(kingdom[4].c[0]);
+        gold = numberWithCommas(kingdom[3].c[0]);
         sidebar_user_stats.find('.gold').text(gold);
 
         kingdomFactoryInstance.getWeaponMultiplier().then(function(multiplier) {
           sidebar_user_stats.find('.gold').text(gold);
           var upgradeWeaponForm = $('#upgradeWeapon');
-          var weaponLevel = kingdom[2].c[0];
-          multiplier = Math.pow(1 + multiplier/100, weaponLevel).toFixed(2);
+          var weaponLevel = kingdom[2][0].c[0];
+          totalMultiplier = Math.pow(1 + multiplier/100, weaponLevel).toFixed(2);
           upgradeWeaponForm.find('.weapon_name').text(weaponLevelToName(weaponLevel));
-          upgradeWeaponForm.find('.weapon_multiplier').text(multiplier);
+          upgradeWeaponForm.find('.weapon_multiplier').text(totalMultiplier);
           if(weaponLevel < 14){
-            upgradeWeaponForm.find('.upgradeWeaponButton').attr("value", "81,920,000 Gold For " + weaponLevelToName(weaponLevel + 1) + " (+30%)");
+            upgradeWeaponForm.find('.upgradeWeaponButton').attr("value", "81,920,000 Gold For " + weaponLevelToName(weaponLevel + 1) + " (+" + multiplier + "%)");
           } else {
             upgradeWeaponForm.find('.upgradeWeaponButton').attr("value", "Fully upgraded.");
             upgradeWeaponForm.find('.upgradeWeaponButton').attr("disabled", "disabled");
@@ -77,12 +77,12 @@ App = {
 
         kingdomFactoryInstance.getFortressMultiplier().then(function(multiplier) {
           var upgradeFortressForm = $('#upgradeFortress');
-          var fortressLevel = kingdom[3].c[0];
-          multiplier = Math.pow(1 + multiplier/100, fortressLevel).toFixed(2);
+          var fortressLevel = kingdom[2][1].c[0];
+          totalMultiplier = Math.pow(1 + multiplier/100, fortressLevel).toFixed(2);
           upgradeFortressForm.find('.fortress_name').text(fortressLevelToName(fortressLevel));
-          upgradeFortressForm.find('.fortress_multiplier').text(multiplier);
+          upgradeFortressForm.find('.fortress_multiplier').text(totalMultiplier);
           if(fortressLevel < 16){
-            upgradeFortressForm.find('.upgradeFortressButton').attr("value", "10,240,000 Gold For " + fortressLevelToName(fortressLevel + 1) + " (+25%)");
+            upgradeFortressForm.find('.upgradeFortressButton').attr("value", "10,240,000 Gold For " + fortressLevelToName(fortressLevel + 1) + " (+" + multiplier + "%)");
           } else {
             upgradeFortressForm.find('.upgradeFortressButton').attr("value", "Fully upgraded.");
             upgradeFortressForm.find('.upgradeFortressButton').attr("disabled", "disabled");

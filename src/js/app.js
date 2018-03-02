@@ -73,11 +73,11 @@ App = {
                 kingdomTemplate.find('img').attr('src', image);
                 kingdomTemplate.find('.race').text(race);
                 kingdomTemplate.find('.numOfSoldiers').text(personnel[0]);
-                kingdomTemplate.find('.siegeTechnology').text(weaponLevelToName(kingdom[2].c[0]));
-                kingdomTemplate.find('.fortification').text(fortressLevelToName(kingdom[3].c[0]));
-                kingdomTemplate.find('.gold').text(kingdom[4]);
-                kingdomTemplate.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[5]);
-                kingdomTemplate.find('.commander').text(kingdom[6]);
+                kingdomTemplate.find('.siegeTechnology').text(weaponLevelToName(kingdom[2][0].c[0]));
+                kingdomTemplate.find('.fortification').text(fortressLevelToName(kingdom[2][1].c[0]));
+                kingdomTemplate.find('.gold').text(kingdom[3]);
+                kingdomTemplate.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[4]);
+                kingdomTemplate.find('.commander').text(kingdom[5]);
                 kingdomsRow.append(kingdomTemplate.html());
               });
             });

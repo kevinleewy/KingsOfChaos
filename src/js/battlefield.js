@@ -56,7 +56,7 @@ App = {
         if(haveKingdom){
           kingdomFactoryInstance.getMyKingdom().then(function(kingdom){
             var sidebar_user_stats = $('#sidebar_user_stats');
-            sidebar_user_stats.find('.gold').text(kingdom[5]);
+            sidebar_user_stats.find('.gold').text(kingdom[3]);
           });
 
           if(start == null){
@@ -97,12 +97,12 @@ App = {
                           &nbsp;\
                       </td>\
                       <td align="right" style="color: #ffffff;">\
-                          <a href="alliances.php?id=">&nbsp;</a>\
+                          <a href="alliances.html?id=">&nbsp;</a>\
                       </td>\
                       <td><a class="player" href="stats.html?id=' + id + '" >' + kingdom[0] + '</a></td>\
                       <td align="right">' + armyCount + '</td>\
                       <td align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
-                      <td align="right" style="padding-right: 20px;">' +  numberWithCommas(kingdom[4].c[0]) + ' Gold</td>\
+                      <td align="right" style="padding-right: 20px;">' +  numberWithCommas(kingdom[3].c[0]) + ' Gold</td>\
                       <td align="right" style="padding-right: 20px;">' + numberWithCommas(id) + '</td>\
                   </tr>\
                 ');   
@@ -125,17 +125,6 @@ $(function() {
   });
 });
 
-function GetURLParameter(sParam) {
-    var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++) {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam) {
-            return sParameterName[1];
-        }
-    }
-};
-
 function loadSections(haveKingdom){
     $("#header").load("../sections/header.html");
     $("#footer").load("../sections/footer.html");
@@ -144,27 +133,4 @@ function loadSections(haveKingdom){
     } else {
       $("#sidebar").load("../sections/sidebar.html");
     }
-};
-
-function idToRace(id){
-  switch (id) {
-    case (0):
-      return 'Divine';
-    case (1):
-      return 'Humans';
-    case (2):
-      return 'Dwarves';
-    case (3):
-      return 'Elves';
-    case (4):
-      return 'Orcs';
-    case (5):
-      return 'Undead';      
-    default:
-      throw 'Invalid Race ID';
-  }
-};
-
-function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };

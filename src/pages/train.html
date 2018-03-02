@@ -18,6 +18,7 @@
         <script src="../js/bootstrap.min.js"></script>
         <script src="../js/web3.min.js"></script>
         <script src="../js/truffle-contract.js"></script>
+        <script src="../js/util.js"></script>
         <script src="../js/train.js"></script>
 
         <script type="text/javascript" src="http://w.sharethis.com/widget/?tabs=web%2Cpost&amp;charset=utf-8&amp;style=rotate&amp;publisher=61b27ec8-6172-4261-a2f9-f5eed4bfffcb&amp;linkfg=%23545e7d"></script>
@@ -217,25 +218,21 @@
                         </tr>
                         <tr>
                             <td valign="top" style="padding-right: 25px;">
-                                <form method="post" action="train.php">
-                                    <table class="table_lines" border="0" cellspacing="0" cellpadding="6" width="100%">
-                                        <tr>
-                                            <th colspan=2 align="center">Upgrade Covert Skill</th>
-                                        </tr>
-                                        <tr>
-                                            <th class="subh" align="left">Current Covert Skill</th>
-                                            <th class="subh">Upgrade</th>
-                                        </tr>
-                                        <tr>
-                                            <td>Level 4</td>
-                                            <td align="center">
-                                                <input type="submit" value="62,900 Gold (+60%)" size="5">
-                                                <input type="hidden" name="upgrade_spy" value="yes">
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <input type="hidden" name="hash" value="">
-                                </form>
+                                <table id="upgradeCovertTable" class="table_lines" border="0" cellspacing="0" cellpadding="6" width="100%">
+                                    <tr>
+                                        <th colspan=2 align="center">Upgrade Covert Skill</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="subh" align="left">Current Covert Skill</th>
+                                        <th class="subh">Upgrade</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Level <span class="covertLevel">4</span></td>
+                                        <td align="center">
+                                            <input id="upgradeCovertButton" type="submit" value="62,900 Gold (+60%)" size="5">
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                             <td>
                                 <form method="post" action="train.php">

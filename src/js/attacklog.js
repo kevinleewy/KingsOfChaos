@@ -58,7 +58,7 @@ App = {
 
         kingdomFactoryInstance.getMyKingdom().then(function(kingdom){
           var sidebar_user_stats = $('#sidebar_user_stats');
-          sidebar_user_stats.find('.gold').text(kingdom[5]);
+          sidebar_user_stats.find('.gold').text(kingdom[3]);
         });
 
       }).then(function(){

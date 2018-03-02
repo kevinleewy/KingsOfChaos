@@ -2,10 +2,6 @@ App = {
   web3Provider: null,
   contracts: {},
 
-  battleId: null,
-  targetId: null,
-  pov: 3,
-
   init: function() {
     return App.initWeb3();
   },
@@ -40,7 +36,7 @@ App = {
   },
 
   bindEvents: function() {
-    $(document).on('click', '#attackButton', App.attack);
+    $(document).on('click', '#buyMercsButton', App.buyMercs);
   },
 
   loadPage: function(kingdoms, account) {
@@ -49,82 +45,65 @@ App = {
 
     App.contracts.KingdomFactory.deployed().then(function(instance) {
       kingdomFactoryInstance = instance;
-      App.battleId = GetURLParameter('id');
-      App.pov = GetURLParameter('pov');
-      kingdomFactoryInstance.haveKingdom().then(function(haveKingdom){
-        if(!haveKingdom){
-          //TODO: Hide Attack Again Button
-        }
-        loadSections(haveKingdom);
-      }).then(function() {
-        kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
-          var sidebar_user_stats = $('#sidebar_user_stats');
-          sidebar_user_stats.find('.gold').text(kingdom[3]);
-        });
-
-        kingdomFactoryInstance.getBattle(App.battleId).then(function(battle) {
-          if(App.pov == 1){
-            App.targetId = battle[1];
-          }
-          if(App.pov == 2){
-            App.targetId = battle[0];
-          }
-          kingdomFactoryInstance.getKingdom(battle[0]).then(function(attacker){
-            kingdomFactoryInstance.getKingdom(battle[1]).then(function(defender){
-              var battleInfo = parseBattleInfo(battle, attacker[0], defender[0], App.pov);
-              $('#myName').text(battleInfo[0]);
-              $('#myId').text(battleInfo[1]);
-              $('#myDamage').text(battleInfo[2]);
-              $('#myCasualties').text(battleInfo[3]);
-              $('#otherName').text(battleInfo[4]);
-              $('#otherId').text(battleInfo[5]);
-              $('#otherDamage').text(battleInfo[6]);
-              $('#otherCasualties').text(battleInfo[7]);
-              if(battleInfo[8]){
-                $('#winnerName').text(battleInfo[0]);
-                $('#loserName').text(battleInfo[4]);
-                $('#resultPhrase').attr("color", "GREEN");
-              } else {
-                $('#winnerName').text(battleInfo[4]);
-                $('#loserName').text(battleInfo[0]);
-                $('#resultPhrase').attr("color", "RED");
-              }
-            });
-          });
-        });
-      });  
-    }).catch(function(err) {
-      console.log('Battle Report:' + err.message);
-    });
-  },
-
-  attack: function(event) {
-    event.preventDefault();
-
-    var kingdomFactoryInstance;
-
-    App.contracts.KingdomFactory.deployed().then(function(instance) {
-      kingdomFactoryInstance = instance;
-    }).then(function() {
       kingdomFactoryInstance.haveKingdom().then(function(haveKingdom){
         if(!haveKingdom){
           location.assign("create.html");
         }
+        loadSections(haveKingdom);
+      }).then(function() {
 
-        kingdomFactoryInstance.attack(App.targetId).then(function(){
-          kingdomFactoryInstance.BattleCompleted().watch(function(err, response){
-            alert("Attacked!");
-            var battleId = response.args.battleId.c[0];
-            location.assign("battle_report.html?id=" + battleId + "&pov=1");
-          });
+        kingdomFactoryInstance.getMyKingdom().then(function(kingdom){
+          var sidebar_user_stats = $('#sidebar_user_stats');
+          sidebar_user_stats.find('.gold').text(kingdom[3]);
         });
 
-
+        kingdomFactoryInstance.getMyPersonnel().then(function(personnel) {
+          var personnelTable = $('#personnel');
+          personnelTable.find('.untrainedSoldiers').text(numberWithCommas(personnel[0]));
+          personnelTable.find('.trainedAttackSoldiers').text(numberWithCommas(personnel[1]));
+          personnelTable.find('.attackMercs').text(numberWithCommas(personnel[2]));
+          personnelTable.find('.trainedDefenseSoldiers').text(numberWithCommas(personnel[3]));
+          personnelTable.find('.defenseMercs').text(numberWithCommas(personnel[4]));
+          personnelTable.find('.spies').text(numberWithCommas(personnel[5]));
+          personnelTable.find('.sentries').text(numberWithCommas(personnel[6]));
+          var totalFightingForce = 0;
+          personnel.forEach(function(x){
+            totalFightingForce += x.c[0];
+          })
+          personnelTable.find('.totalFightingForce').text(numberWithCommas(totalFightingForce));
+          personnelTable.find('.personnelCount').text(numberWithCommas(totalFightingForce));
+        });       
       });
-
     }).catch(function(err) {
-      console.log('Attack:' + err.message);
+      console.log('displayMercs:' + err.message);
     });
+  },
+
+  buyMercs: function(event){
+    event.preventDefault();
+
+    var attackMercsQuantity = parseInt($('#attackMercsQuantity').val());
+    var defenseMercsQuantity = parseInt($('#defenseMercsQuantity').val());
+    if((attackMercsQuantity > 0 && defenseMercsQuantity >= 0 ) || (attackMercsQuantity >= 0 && defenseMercsQuantity > 0)){
+      this.value = "Buying...";
+      this.disabled = "disabled";
+
+      var kingdomFactoryInstance;
+
+      App.contracts.KingdomFactory.deployed().then(function(instance) {
+        kingdomFactoryInstance = instance;
+        kingdomFactoryInstance.buyMercs(attackMercsQuantity, defenseMercsQuantity).then(function(haveKingdom){
+          kingdomFactoryInstance.PurchasedMercs().watch(function(err, response){
+            alert("Purchased Mercenaries!");
+            location.assign("mercs.html");
+          });
+        })
+      }).catch(function(err) {
+        console.log('Purchasing Mercenaries:' + err.message);
+      });
+    } else {
+      alert("At least one quantity must be greater than 0, and none can be negative");
+    } 
   },
 
 };
@@ -136,7 +115,6 @@ $(function() {
   });
 });
 
-
 function GetURLParameter(sParam) {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
@@ -146,7 +124,7 @@ function GetURLParameter(sParam) {
             return sParameterName[1];
         }
     }
-}
+};
 
 function loadSections(haveKingdom){
     $("#header").load("../sections/header.html");
@@ -156,6 +134,7 @@ function loadSections(haveKingdom){
     } else {
       $("#sidebar").load("../sections/sidebar.html");
     }
+    $("#personnel").load("../sections/personnel.html");
 };
 
 function idToRace(id){
@@ -259,53 +238,29 @@ function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-function parseBattleInfo(battle, attacker_name, defender_name, pov) {
-  var user1_name;
-  var user1_id;
-  var user1_damage;
-  var user1_casualties;
-  var user2_name;
-  var user2_id;
-  var user2_damage;
-  var user2_casualties;
-  var success;
+function secondsToDays(seconds) {
 
-  if(pov == 2){
-    user1_name = 'Your';
-    user1_id = battle[1];
-    user1_damage = battle[3];
-    user1_casualties = battle[5];
-    user2_name = attacker_name + "\'s";
-    user2_id = battle[0];
-    user2_damage = battle[2];
-    user2_casualties = battle[4];
-    success = !battle[6];
-
-  } else {
-    if(pov == 1){
-      user1_name = 'Your';
-    } else {
-      user1_name = attacker_name + "\'s";
+  var days = Math.floor(seconds / (3600*24));
+  seconds -= days*3600*24;
+  var hrs  = Math.floor(seconds / 3600);
+  seconds -= hrs*3600;
+  var mnts = Math.floor(seconds / 60);
+  seconds -= mnts*60;
+  if(days > 0){
+    if(hrs > 0){
+      return days+" days, "+hrs+" hours";
     }
-    user1_id = battle[0];
-    user1_damage = battle[2];
-    user1_casualties = battle[4];
-    user2_name = defender_name + "\'s";
-    user2_id = battle[1];
-    user2_damage = battle[3];
-    user2_casualties = battle[5];
-    success = battle[6];    
+    return days+" days";
+  } else if (hrs > 0){
+    if(mnts > 0){
+      return hrs+" hours, "+mnts+" minutes";
+    }
+    return hrs+" hours";
+  } else if (mnts > 0){
+    if(seconds > 0){
+      return mnts+" minutes, "+seconds+" seconds";
+    }
+    return mnts + " minutes";
   }
-
-  return [
-    user1_name,
-    user1_id,
-    numberWithCommas(user1_damage),
-    numberWithCommas(user1_casualties),
-    user2_name,
-    user2_id,
-    numberWithCommas(user2_damage),
-    numberWithCommas(user2_casualties),
-    success
-  ];
+  return seconds + " seconds";
 };

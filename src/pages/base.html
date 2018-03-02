@@ -18,6 +18,7 @@
         <script src="../js/bootstrap.min.js"></script>
         <script src="../js/web3.min.js"></script>
         <script src="../js/truffle-contract.js"></script>
+        <script src="../js/util.js"></script>
         <script src="../js/base.js"></script>
 
         <script type="text/javascript" src="http://w.sharethis.com/widget/?tabs=web%2Cpost&amp;charset=utf-8&amp;style=rotate&amp;publisher=61b27ec8-6172-4261-a2f9-f5eed4bfffcb&amp;linkfg=%23545e7d"></script>
@@ -188,7 +189,71 @@
                                     </tr>
                                 </table>
                                 <br><br>
-                                <div id="personnel"></div>
+                                <style type="text/css">
+                                    table.personnel th { cursor: pointer }
+                                </style>
+                                <table id="personnel" class="table_lines personnel" width="100%" cellspacing="0" cellpadding="6" border="0">
+                                    <tr>
+                                        <th colspan="3"><span style="float: right" class="expando">-</span>Personnel</th>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Trained Attack Soldiers</b></td>
+                                        <td class="trainedAttackSoldiers" align="right">0</td>
+                                        <td align="right">[ <a href="train.html">train more</a> ]</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Trained Attack Mercenaries</b></td>
+                                        <td class="attackMercs" align="right">0</td>
+                                        <td align="right">[ <a href="mercs.html">hire more</a> ]</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Trained Defense Soldiers</b></td>
+                                        <td class="trainedDefenseSoldiers" align="right">0</td>
+                                        <td align="right">[ <a href="train.html">train more</a> ]</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Trained Defense Mercenaries</b></td>
+                                        <td class="defenseMercs" align="right">0</td>
+                                        <td align="right">[ <a href="mercs.html">hire more</a> ]</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Untrained Soldiers</b></td>
+                                        <td class="untrainedSoldiers" align="right">0</td>
+                                        <td align="right">[ <a href="base.html">recruit more</a> ]</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="subh"><b>Spies</b></td>
+                                        <td class="spies" class="subh" align="right">0</td>
+                                        <td align="right">[ <a href="train.html">train more</a> ]</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="subh"><b>Sentries</b></td>
+                                        <td class="sentries" class="subh" align="right">0</td>
+                                        <td align="right">[ <a href="train.html">train more</a> ]</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Army Morale</b></td>
+                                        <td class="armyMorale" align="right">0</td>
+                                        <td align="right">[ <a href="recruit.html">recruit more</a> ]</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Total Fighting Force</b></td>
+                                        <td class="totalFightingForce" align="right">0</td>
+                                        <td align="right">[ <a href="recruit.html">recruit more</a> ]</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" align="center" style="display:none"><span class="personnelCount">0</span> soldiers</td>
+                                    </tr>
+                                </table>
+                                <script type="text/javascript">
+                                    $('table.personnel th').click(function(){
+                                        $(this).parents('table:first').find('tr td').toggle()
+                                        if ($(this).parents('table:first').find('tr td:first').is(':visible'))
+                                            $(this).find('span.expando').html('-')
+                                        else
+                                            $(this).find('span.expando').html('+')
+                                    }).click()
+                                </script>
                                 <br><br>
                                 <div id="myOfficers"></div>
                             </td>
@@ -258,16 +323,15 @@
                                     <tr><th>Preferences</th></tr>
                                     <tr>
                                         <td align="center">
-                                            <form action="base.php" method="post">Change race to
-                                                <select name="change_race_to">
-                                                    <option label="Humans" value="Humans">Humans</option>
-                                                    <option label="Orcs" value="Orcs">Orcs</option>
-                                                    <option label="Elves" value="Elves">Elves</option>
-                                                    <option label="Dwarves" value="Dwarves">Dwarves</option>
-                                                    <option label="Undead" value="Undead">Undead</option>
-                                                </select>
-                                                <input type="submit" name="change_race" value="Go">
-                                            </form> (3 changes left)
+                                            <select id="race">
+                                                <option label="Humans" value="1">Humans</option>
+                                                <option label="Dwarves" value="2">Dwarves</option>
+                                                <option label="Elves" value="3">Elves</option>
+                                                <option label="Orcs" value="4">Orcs</option>
+                                                <option label="Undead" value="5">Undead</option>
+                                            </select>
+                                            <button class="btn btn-primary" id="changeRaceButton" type="button">Go</button>
+                                            (3 changes left)
                                         </td>
                                     </tr>
                                     <tr><td align="center"><a href="prefs.php">Change E-Mail or Password</a></td></tr>

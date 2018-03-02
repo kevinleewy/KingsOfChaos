@@ -38,6 +38,7 @@ App = {
   bindEvents: function() {
     $(document).on('click', '#recruitButton', App.recruitSoldiers);
     $(document).on('click', '#ditch_commander', App.handleDitchCommander);
+    $(document).on('click', '#changeRaceButton', App.changeRace);
   },
 
   loadPage: function(kingdoms, account) {
@@ -69,7 +70,7 @@ App = {
         });
 
         kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
-          var gold = numberWithCommas(kingdom[4].c[0]);
+          var gold = numberWithCommas(kingdom[3].c[0]);
           var sidebar_user_stats = $('#sidebar_user_stats');
           sidebar_user_stats.find('.gold').text(gold);
           
@@ -77,12 +78,12 @@ App = {
           var user_info = $('#user_info');
           user_info.find('.name').text(kingdom[0]);
           user_info.find('.race').text(race);
-          user_info.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[5]);
-          user_info.find('.commander').text(kingdom[6]);
+          user_info.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[4]);
+          user_info.find('.commander').text(kingdom[5]);
 
           var military_overview_table = $('#military_overview_table');
-          military_overview_table.find('.weapon_name').text(weaponLevelToName(kingdom[2].c[0]));
-          military_overview_table.find('.fortress_name').text(fortressLevelToName(kingdom[3].c[0]));
+          military_overview_table.find('.weapon_name').text(weaponLevelToName(kingdom[2][0].c[0]));
+          military_overview_table.find('.fortress_name').text(fortressLevelToName(kingdom[2][1].c[0]));
           military_overview_table.find('.gold').text(gold);
         });
 
@@ -127,9 +128,11 @@ App = {
           var personnelTable = $('#personnel');
           personnelTable.find('.untrainedSoldiers').text(numberWithCommas(personnel[0]));
           personnelTable.find('.trainedAttackSoldiers').text(numberWithCommas(personnel[1]));
-          personnelTable.find('.trainedDefenseSoldiers').text(numberWithCommas(personnel[2]));
-          personnelTable.find('.spies').text(numberWithCommas(personnel[3]));
-          personnelTable.find('.sentries').text(numberWithCommas(personnel[4]));
+          personnelTable.find('.attackMercs').text(numberWithCommas(personnel[2]));
+          personnelTable.find('.trainedDefenseSoldiers').text(numberWithCommas(personnel[3]));
+          personnelTable.find('.defenseMercs').text(numberWithCommas(personnel[4]));
+          personnelTable.find('.spies').text(numberWithCommas(personnel[5]));
+          personnelTable.find('.sentries').text(numberWithCommas(personnel[6]));
           var totalFightingForce = 0;
           personnel.forEach(function(x){
             totalFightingForce += x.c[0];
@@ -159,14 +162,22 @@ App = {
           } else {
             officers.forEach(function(officer){
               kingdomFactoryInstance.getKingdom(officer).then(function(kingdom) {
-                $('#officers tr:last').before(
-                  '<tr>\
-                    <td ><a href=\"/pages/stats.html?id=' + officer.c[0] + '\" >' + kingdom[0] + '</a></td>\
-                    <td  align="right">457</td>\
-                    <td  align="right">' + kingdom[2] + '</td>\
-                    <td  align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
-                  </tr>'
-                );
+                kingdomFactoryInstance.spyOnPersonnel(officer).then(function(personnel) {
+                  var totalFightingForce = 0;
+                  personnel[1].forEach(function(x){
+                    totalFightingForce += x.c[0];
+                  })
+                  $('#officers tr:last').before(
+                    '<tr>\
+                      <td ><a href=\"/pages/stats.html?id=' + officer.c[0] + '\" >' + kingdom[0] + '</a></td>\
+                      <td  align="right">457</td>\
+                      <td  align="right">' + totalFightingForce + '</td>\
+                      <td  align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
+                      <td  align="right">0</td>\
+                      <td  align="right"><a href="/pages/create.html?id=' + officer + '"> Link </a></td>\
+                    </tr>'
+                  );
+                });
               });
             });
           }
@@ -250,6 +261,40 @@ App = {
     });
   },
 
+  changeRace: function(event) {
+    event.preventDefault();
+
+    var race = $('#race').val();
+    if(race < 1 || race > 5){
+      console.log('Invalid race ID: ' + race);
+    } else {
+
+      var kingdomFactoryInstance;
+
+      App.contracts.KingdomFactory.deployed().then(function(instance) {
+        kingdomFactoryInstance = instance;
+      }).then(function() {
+
+        kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
+          if(kingdom[1].c[0] == race){
+            alert("Cannot select current race");
+          } else {
+            //console.log("changing from "+ idToRace(kingdom[1].c[0]) +" to "+ idToRace(race));
+            kingdomFactoryInstance.changeRace(race).then(function(){
+
+              kingdomFactoryInstance.ChangedRace().watch(function(err, response){
+                alert("Changed Race!");
+                location.assign("base.html");
+              });
+            });
+          }
+        });
+      }).catch(function(err) {
+        console.log('Attack:' + err.message);
+      });
+    }
+  },
+
 };
 
 $(function() {
@@ -268,137 +313,8 @@ function loadSections(haveKingdom){
       $("#sidebar").load("../sections/sidebar.html");
     }
     $("#myInfo").load("../sections/myInfo.html");
-    $("#personnel").load("../sections/personnel.html");
     $("#myOfficers").load("../sections/myOfficers.html");
     $("#recentAttacks").load("../sections/recentAttacks.html");
     $("#military_overview").load("../sections/military_overview.html");
     $("#military_effectiveness").load("../sections/military_effectiveness.html");
-};
-
-function idToRace(id){
-  switch (id) {
-    case (0):
-      return 'Divine';
-    case (1):
-      return 'Human';
-    case (2):
-      return 'Dwarves';
-    case (3):
-      return 'Elves';
-    case (4):
-      return 'Orcs';
-    case (5):
-      return 'Undead';      
-    default:
-      throw 'Invalid Race ID';
-  }
-};
-
-function weaponLevelToName(level){
-  switch (level) {
-    case (0):
-      return 'None';
-    case (1):
-      return 'Flaming Arrows';
-    case (2):
-      return 'Ballistas';
-    case (3):
-      return 'Battering Ram';
-    case (4):
-      return 'Ladders';
-    case (5):
-      return 'Trojan Horse';
-    case (6):
-      return 'Catapults'; 
-    case (7):
-      return 'War Elephants'; 
-    case (8):
-      return 'Siege Towers';
-    case (9):
-      return 'Trebuchets'; 
-    case (10):
-      return 'Black Powder';
-    case (11):
-      return 'Sappers';
-    case (12):
-      return 'Dynamite';
-    case (13):
-      return 'Greek Fire';
-    case (14):
-      return 'Cannons'; 
-    default:
-      throw 'Invalid Weapon Level';
-  }
-};
-
-function fortressLevelToName(level){
-  switch (level) {
-    case (0):
-      return 'Camp';
-    case (1):
-      return 'Stockade';
-    case (2):
-      return 'Rabid Pitbulls';
-    case (3):
-      return 'Walled Town';
-    case (4):
-      return 'Towers';
-    case (5):
-      return 'Battlements';
-    case (6):
-      return 'Portcullis'; 
-    case (7):
-      return 'Boiling Oil'; 
-    case (8):
-      return 'Trenches';
-    case (9):
-      return 'Moat'; 
-    case (10):
-      return 'Draw Bridge';
-    case (11):
-      return 'Fortress';
-    case (12):
-      return 'Stronghold';
-    case (13):
-      return 'Palace';
-    case (14):
-      return 'Keep';
-    case (15):
-      return 'Citadel'; 
-    case (16):
-      return 'Hand of God'; 
-    default:
-      throw 'Invalid Fortress Level';
-  }
-};
-
-function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
-
-function secondsToDays(seconds) {
-
-  var days = Math.floor(seconds / (3600*24));
-  seconds -= days*3600*24;
-  var hrs  = Math.floor(seconds / 3600);
-  seconds -= hrs*3600;
-  var mnts = Math.floor(seconds / 60);
-  seconds -= mnts*60;
-  if(days > 0){
-    if(hrs > 0){
-      return days+" days, "+hrs+" hours";
-    }
-    return days+" days";
-  } else if (hrs > 0){
-    if(mnts > 0){
-      return hrs+" hours, "+mnts+" minutes";
-    }
-    return hrs+" hours";
-  } else if (mnts > 0){
-    if(seconds > 0){
-      return mnts+" minutes, "+seconds+" seconds";
-    }
-    return mnts + " minutes";
-  }
-  return seconds + " seconds";
 };

@@ -80,20 +80,19 @@ App = {
             user_stats.find('.name').text(kingdom[0]);
             var race = idToRace(kingdom[1].c[0]);
             user_stats.find('.race').text(race);
-            console.log(personnel);
             if(personnel[0]){
               var totalFightingForce = 0;
               personnel[1].forEach(function(x){
                 totalFightingForce += x.c[0];
               })
-              user_stats.find('.numOfSoldiers').text(totalFightingForce);
+              user_stats.find('.numOfSoldiers').text(numberWithCommas(totalFightingForce));
             } else {
               user_stats.find('.numOfSoldiers').text("???");              
             }
             user_stats.find('.weaponLevel').text(kingdom[2]);
             user_stats.find('.fortressLevel').text(kingdom[3]);
-            user_stats.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[6]);
-            user_stats.find('.commander').text(kingdom[6]);
+            user_stats.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[4]);
+            user_stats.find('.commander').text(kingdom[5]);
           });
         });
 
@@ -104,14 +103,27 @@ App = {
           } else {
             officers.forEach(function(officer){
               kingdomFactoryInstance.getKingdom(officer).then(function(kingdom) {
-                $('#officers tr:last').before(
-                  '<tr>\
-                    <td ><a href=\"/pages/stats.html?id=' + officer.c[0] + '\" >' + kingdom[0] + '</a></td>\
-                    <td  align="right">457</td>\
-                    <td  align="right">' + kingdom[2] + '</td>\
-                    <td  align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
-                  </tr>'
-                );
+                kingdomFactoryInstance.spyOnPersonnel(officer).then(function(personnel) {
+                  var totalFightingForce;
+                  if(personnel[0]){
+                    totalFightingForce = 0;
+                    personnel[1].forEach(function(x){
+                      totalFightingForce += x.c[0];
+                    })
+                    totalFightingForce = numberWithCommas(totalFightingForce);
+                  } else {
+                    totalFightingForce = "???";            
+                  }
+
+                  $('#officers tr:last').before(
+                    '<tr>\
+                      <td ><a href=\"/pages/stats.html?id=' + officer.c[0] + '\" >' + kingdom[0] + '</a></td>\
+                      <td  align="right">457</td>\
+                      <td  align="right">' + totalFightingForce + '</td>\
+                      <td  align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
+                    </tr>'
+                  );
+                });
               });
             });
           }
@@ -194,18 +206,6 @@ $(function() {
 });
 
 
-
-function GetURLParameter(sParam) {
-    var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++) {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam) {
-            return sParameterName[1];
-        }
-    }
-};
-
 function loadSections(haveKingdom){
     $("#header").load("../sections/header.html");
     $("#footer").load("../sections/footer.html");
@@ -217,22 +217,3 @@ function loadSections(haveKingdom){
     $("#user_stats").load("../sections/user_stats.html");
     $("#officers").load("../sections/officers.html");
 };
-
-function idToRace(id){
-  switch (id) {
-    case (0):
-      return 'Divine';
-    case (1):
-      return 'Human';
-    case (2):
-      return 'Dwarves';
-    case (3):
-      return 'Elves';
-    case (4):
-      return 'Orcs';
-    case (5):
-      return 'Undead';      
-    default:
-      throw 'Invalid Race ID';
-  }
-}

@@ -60,36 +60,36 @@ App = {
 
     var name = $('#name').val();
     var race = $('#race').val();
-    if(race < 0 || race > 4){
+    if(race < 1 || race > 5){
       console.log('Invalid race ID: ' + race);
-    }
+    } else {
+      var kingdomFactoryInstance;
 
-    var kingdomFactoryInstance;
+      web3.eth.getAccounts(function(error, accounts) {
+        if (error) {
+          console.log(error);
+        }
 
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
+        var account = accounts[0];
+        var commanderId = GetURLParameter('id');
+        if(commanderId == null){
+          commanderId = 0;
+        }
 
-      var account = accounts[0];
-      var commanderId = GetURLParameter('id');
-      if(commanderId == null){
-        commanderId = 0;
-      }
-
-      App.contracts.KingdomFactory.deployed().then(function(instance) {
-        kingdomFactoryInstance = instance;
-        // Execute createNewKingdom as a transaction by sending account
-        kingdomFactoryInstance.createNewKingdom(name, race, commanderId, {from: account}).then(function() {
-          kingdomFactoryInstance.NewKingdom().watch(function(err, response){
-            alert("Created!");
-            location.assign("base.html");
+        App.contracts.KingdomFactory.deployed().then(function(instance) {
+          kingdomFactoryInstance = instance;
+          // Execute createNewKingdom as a transaction by sending account
+          kingdomFactoryInstance.createNewKingdom(name, race, commanderId, {from: account}).then(function() {
+            kingdomFactoryInstance.NewKingdom().watch(function(err, response){
+              alert("Created!");
+              location.assign("base.html");
+            });
           });
+        }).catch(function(err) {
+          console.log('handleCreate:' + err.message);
         });
-      }).catch(function(err) {
-        console.log('handleCreate:' + err.message);
       });
-    });
+    }
   }
 
 };
@@ -99,17 +99,6 @@ $(function() {
     App.init();
   });
 });
-
-function GetURLParameter(sParam) {
-    var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++) {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam) {
-            return sParameterName[1];
-        }
-    }
-};
 
 function loadSections(haveKingdom){
     $("#header").load("../sections/header.html");
