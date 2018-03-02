@@ -55,15 +55,19 @@ App = {
             var sidebar_user_stats = $('#sidebar_user_stats');
             sidebar_user_stats.find('.gold').text(kingdom[5]);
             kingdomFactoryInstance.isCommander(id).then(function(isCommander){
-              var button = $('#assignButton');
-              if(isCommander){
-                button.attr('disabled','disabled');
-                button.text("Already my commander");
-              } else {
-                button.removeAttr('disabled');
-                button.text("Make chosen my commander!");
-              }
-              //TODO: Disable button if it's me
+              kingdomFactoryInstance.isMyKingdomId(id).then(function(isMyId){
+                var button = $('#assignButton');
+                if(isCommander){
+                  button.attr('disabled','disabled');
+                  button.text("Already my commander");
+                } else if(isMyId) {
+                  button.attr('disabled','disabled');
+                  button.text("This is my kingdom");                  
+                } else {
+                  button.removeAttr('disabled');
+                  button.text("Make chosen my commander!");
+                }
+              });
             });
           });
           App.buttonLink = "pages/base.html";
@@ -71,15 +75,26 @@ App = {
       }).then(function(){
 
         kingdomFactoryInstance.getKingdom(id).then(function(kingdom) {
-          var user_stats = $('#user_stats');
-          user_stats.find('.name').text(kingdom[0]);
-          var race = idToRace(kingdom[1].c[0]);
-          user_stats.find('.race').text(race);
-          user_stats.find('.numOfSoldiers').text(kingdom[2]);
-          user_stats.find('.weaponLevel').text(kingdom[3]);
-          user_stats.find('.fortressLevel').text(kingdom[4]);
-          user_stats.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[6]);
-          user_stats.find('.commander').text(kingdom[7]);
+          kingdomFactoryInstance.spyOnPersonnel(id).then(function(personnel) {
+            var user_stats = $('#user_stats');
+            user_stats.find('.name').text(kingdom[0]);
+            var race = idToRace(kingdom[1].c[0]);
+            user_stats.find('.race').text(race);
+            console.log(personnel);
+            if(personnel[0]){
+              var totalFightingForce = 0;
+              personnel[1].forEach(function(x){
+                totalFightingForce += x.c[0];
+              })
+              user_stats.find('.numOfSoldiers').text(totalFightingForce);
+            } else {
+              user_stats.find('.numOfSoldiers').text("???");              
+            }
+            user_stats.find('.weaponLevel').text(kingdom[2]);
+            user_stats.find('.fortressLevel').text(kingdom[3]);
+            user_stats.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[6]);
+            user_stats.find('.commander').text(kingdom[6]);
+          });
         });
 
         kingdomFactoryInstance.getOfficers(id).then(function(officers) {

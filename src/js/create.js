@@ -72,11 +72,15 @@ App = {
       }
 
       var account = accounts[0];
+      var commanderId = GetURLParameter('id');
+      if(commanderId == null){
+        commanderId = 0;
+      }
 
       App.contracts.KingdomFactory.deployed().then(function(instance) {
         kingdomFactoryInstance = instance;
         // Execute createNewKingdom as a transaction by sending account
-        kingdomFactoryInstance.createNewKingdom(name, race, {from: account}).then(function() {
+        kingdomFactoryInstance.createNewKingdom(name, race, commanderId, {from: account}).then(function() {
           kingdomFactoryInstance.NewKingdom().watch(function(err, response){
             alert("Created!");
             location.assign("base.html");
@@ -95,6 +99,17 @@ $(function() {
     App.init();
   });
 });
+
+function GetURLParameter(sParam) {
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) {
+            return sParameterName[1];
+        }
+    }
+};
 
 function loadSections(haveKingdom){
     $("#header").load("../sections/header.html");

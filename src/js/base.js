@@ -53,6 +53,13 @@ App = {
         loadSections(haveKingdom);
       }).then(function() {
 
+        kingdomFactoryInstance.getMyKingdomId().then(function(id){
+            var recruitLink = $('#recruit').find('.recruit_link');
+            var url = 'localhost:3000/pages/create.html?id=' + id;
+            recruitLink.text(url);
+            recruitLink.attr("href", url);
+        });
+
         kingdomFactoryInstance.canRecruit().then(function(result){
           if(!result[0]){
             var recruitButton = $('#recruit').find('.recruitButton');

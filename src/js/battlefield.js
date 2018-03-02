@@ -79,11 +79,17 @@ App = {
         for (var i = start; i < end; i++) {
           (function(id) {
             kingdomFactoryInstance.getKingdom(id).then(function(kingdom){
-              kingdomFactoryInstance.getPersonnel(id).then(function(personnel){
-                var totalFightingForce = 0;
-                personnel.forEach(function(x){
-                  totalFightingForce += x.c[0];
-                })
+              kingdomFactoryInstance.spyOnPersonnel(id).then(function(personnel){
+                var armyCount;
+                if(personnel[0]){
+                  var totalFightingForce = 0;
+                  personnel[1].forEach(function(x){
+                    totalFightingForce += x.c[0];
+                  })
+                  armyCount = numberWithCommas(totalFightingForce);
+                } else {
+                  armyCount = '???';
+                }
                 $('#battlefieldTable tr:last').before('\
                   <tr class="player" user_id="' + id + '" >\
                       <td align="center" valign="middle" style="padding: 0">\
@@ -94,7 +100,7 @@ App = {
                           <a href="alliances.php?id=">&nbsp;</a>\
                       </td>\
                       <td><a class="player" href="stats.html?id=' + id + '" >' + kingdom[0] + '</a></td>\
-                      <td align="right">' + numberWithCommas(totalFightingForce) + '</td>\
+                      <td align="right">' + armyCount + '</td>\
                       <td align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
                       <td align="right" style="padding-right: 20px;">' +  numberWithCommas(kingdom[4].c[0]) + ' Gold</td>\
                       <td align="right" style="padding-right: 20px;">' + numberWithCommas(id) + '</td>\

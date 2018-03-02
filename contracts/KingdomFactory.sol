@@ -85,9 +85,9 @@ contract KingdomFactory {
       return id;
     }
 
-    function createNewKingdom(string _name, uint _race) public returns (uint){
+    function createNewKingdom(string _name, uint _race, uint _commanderId) public returns (uint){
       require(kingdomOf[msg.sender] == 0);
-      return _createKingdom(_name, _race, 0, 0, 0, 0, 0, 0);
+      return _createKingdom(_name, _race, 0, 0, 0, 0, 0, _commanderId);
     }
 
     function getKingdom(uint _id) public view returns (string, uint8, uint8, uint8, uint, uint, string) {
@@ -97,10 +97,20 @@ contract KingdomFactory {
           kingdom.commander, commanderName);
     }
 
-    function getPersonnel(uint _id) public view returns (uint256, uint256, uint256, uint256, uint256) {
+    function getPersonnel(uint _id) private view returns (uint256[5]) {
       var military = militaries[_id];
-      return (military.numOfSoldiers, military.numOfAttackSpecialists, military.numOfDefenseSpecialists,
-        military.numOfSpies, military.numOfSentries);
+      return [military.numOfSoldiers, military.numOfAttackSpecialists, military.numOfDefenseSpecialists,
+        military.numOfSpies, military.numOfSentries];
+    }
+
+    function spyOnPersonnel(uint _targetId) public view returns (bool, uint256[5]) {
+      uint256 senderId = kingdomOf[msg.sender];
+      require(senderId > 0);
+      if(senderId == _targetId || spyRating(senderId) > sentryRating(_targetId)){
+        //var m1, m2, m3, m4, m5 = getPersonnel(_targetId);
+        return (true, getPersonnel(_targetId));
+      }
+      return (false, [uint(0), uint(0), uint(0), uint(0), uint(0)]);
     }
 
     function getWeaponMultiplier() public view returns (uint8) {
@@ -154,13 +164,17 @@ contract KingdomFactory {
       return (kingdomOf[msg.sender]);
     }
 
+    function isMyKingdomId(uint256 _id) public view returns (bool){
+      return (kingdomOf[msg.sender] == _id);
+    }
+
     function getMyKingdom() public view returns (string, uint8, uint8, uint8, uint, uint, string) {
       uint256 id = kingdomOf[msg.sender];
       require(id > 0);
       return getKingdom(id);
     }
 
-    function getMyPersonnel() public view returns (uint256, uint256, uint256, uint256, uint256) {
+    function getMyPersonnel() public view returns (uint256[5]) {
       uint256 id = kingdomOf[msg.sender];
       require(id > 0);
       return getPersonnel(id);
