@@ -18,11 +18,13 @@
         <script src="../js/bootstrap.min.js"></script>
         <script src="../js/web3.min.js"></script>
         <script src="../js/truffle-contract.js"></script>
+        <script src="../js/util.js"></script>
         <script src="../js/armory.js"></script>
-
+        <!--
         <script type="text/javascript" src="http://w.sharethis.com/widget/?tabs=web%2Cpost&amp;charset=utf-8&amp;style=rotate&amp;publisher=61b27ec8-6172-4261-a2f9-f5eed4bfffcb&amp;linkfg=%23545e7d"></script>
         <script src="//ads.lfstmedia.com/getad?site=265031" type="text/javascript"></script>
         <META name="verify-v1" content="W8cx8aSLkZX2ZC64sipZmhlBY149culcmvlJ0orWkAA=" />
+        -->
         <!--
         <script language="javascript">
 
@@ -224,57 +226,49 @@
                         </tr>
                     </table>
                     <br>
-                    <form id="upgradeFortress" action="App:upgradeFortress()">
-                        <table width="100%" class="table_lines" border="0" cellspacing="0" cellpadding="6">
-                            <tr>
-                                <th colspan=2 align="center">Fortification</th>
-                            </tr>
-                            <tr>
-                                <th class="subh" align="left">Current Fortification</th>
-                                <th class="subh" width="50%">Upgrade</th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="fortress_name">Trenches</span>
-                                    <span> (x </span>
-                                    <span class="fortress_multiplier">5.96</span>
-                                    <span>)</span>
-                                </td>
-                                <td align="center">
-                                    <input width="100%" name="upgradeFortressButton" class="upgradeFortressButton" onClick="this.value='Upgrading..'; this.upgradeFortButton.disabled=true; this.submit();" type="submit" value="10,240,000 Gold For Moat (+25%)" size="5">
-                                    <input type="hidden" name="upgrade_siege" value="yes">
-                                    <input type="hidden" name="upgrade_siege_type" value="defend">
-                                </td>
-                            </tr>
-                        </table>
-                        <input type="hidden" name="hash" value="">
-                    </form>
 
-                    <form id="upgradeWeapon" action="App:upgradeWeapon()">
-                        <table width="100%" class="table_lines upgradeWeapon" border="0" cellspacing="0" cellpadding="6">
-                            <tr>
-                                <th colspan=2 align="center">Siege Technology</th>
-                            </tr>
-                            <tr>
-                                <th class="subh" align="left">Current Siege Technology</th>
-                                <th class="subh" width="50%">Upgrade</th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="weapon_name">Sappers</span>
-                                    <span> (x </span>
-                                    <span class="weapon_multiplier">17.92</span>
-                                    <span>)</span>
-                                </td>
-                                <td align="center">
-                                    <input width="100%" name="upgradeWeaponButton" class="upgradeWeaponButton" onClick="this.value='Upgrading..'; this.upgradeWeaponButton.disabled=true; this.submit();" type="submit" value="81,920,000 Gold For Dynamite (+30%)" size="5">
-                                    <input type="hidden" name="upgrade_siege" value="yes">
-                                    <input type="hidden" name="upgrade_siege_type" value="attack">
-                                </td>
-                            </tr>
-                        </table>
-                        <input type="hidden" name="hash" value="">
-                    </form>
+                    <table width="100%" id="upgradeFortress" class="table_lines" border="0" cellspacing="0" cellpadding="6">
+                        <tr>
+                            <th colspan=2 align="center">Fortification</th>
+                        </tr>
+                        <tr>
+                            <th class="subh" align="left">Current Fortification</th>
+                            <th class="subh" width="50%">Upgrade</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fortress_name">Trenches</span>
+                                <span> (x </span>
+                                <span class="fortress_multiplier">5.96</span>
+                                <span>)</span>
+                            </td>
+                            <td align="center">
+                                <input width="100%" id="upgradeFortressButton" class="upgradeFortressButton" type="submit" value="10,240,000 Gold For Moat (+25%)" size="5">
+                            </td>
+                        </tr>
+                    </table>
+
+
+                    <table width="100%" id="upgradeWeapon" class="table_lines upgradeWeapon" border="0" cellspacing="0" cellpadding="6">
+                        <tr>
+                            <th colspan=2 align="center">Siege Technology</th>
+                        </tr>
+                        <tr>
+                            <th class="subh" align="left">Current Siege Technology</th>
+                            <th class="subh" width="50%">Upgrade</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="weapon_name">Sappers</span>
+                                <span> (x </span>
+                                <span class="weapon_multiplier">17.92</span>
+                                <span>)</span>
+                            </td>
+                            <td align="center">
+                                <input width="100%" id="upgradeWeaponButton" class="upgradeWeaponButton" type="submit" value="81,920,000 Gold For Dynamite (+30%)" size="5">
+                            </td>
+                        </tr>
+                    </table>
                     
                 </td>
                 <td valign="top" align="center" width="120" style="padding-top: 11px">

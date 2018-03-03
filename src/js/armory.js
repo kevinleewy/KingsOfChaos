@@ -36,9 +36,8 @@ App = {
   },
 
   bindEvents: function() {
-    //$(document).on('click', '#createButton', App.handleJoin);
-    $('#upgradeFortress').submit(App.upgradeFortress);
-    $('#upgradeWeapon').submit(App.upgradeWeapon);
+    $(document).on('click', '#upgradeFortressButton', App.upgradeFortress);
+    $(document).on('click', '#upgradeWeaponButton', App.upgradeWeapon);
   },
 
   loadPage: function(kingdoms, account) {
@@ -93,6 +92,15 @@ App = {
             upgradeFortressForm.find('.upgradeFortressButton').attr("disabled", "disabled");
           }
         });
+      });
+
+      kingdomFactoryInstance.canAttack().then(function(result){
+        var sidebar_user_stats = $('#sidebar_user_stats');
+        if(result[0]){
+          sidebar_user_stats.find('.attackCooldown').text("Ready");
+        } else {
+          sidebar_user_stats.find('.attackCooldown').text(secondsToDays(result[1]));
+        }
       });
 
       kingdomFactoryInstance.getMyOfficers().then(function(officers) {
@@ -154,6 +162,9 @@ App = {
   upgradeFortress: function(event) {
     event.preventDefault();
 
+    this.value = "Upgrading...";
+    this.disabled = "disabled";
+
     var kingdomFactoryInstance;
 
     App.contracts.KingdomFactory.deployed().then(function(instance) {
@@ -176,6 +187,9 @@ App = {
 
   upgradeWeapon: function(event) {
     event.preventDefault();
+
+    this.value = "Upgrading...";
+    this.disabled = "disabled";
 
     var kingdomFactoryInstance;
 
@@ -218,105 +232,4 @@ function loadSections(haveKingdom){
     $("#military_effectiveness").load("../sections/military_effectiveness.html");
     $("#personnel").load("../sections/personnel.html");
     $("#buy_armory").load("../sections/buy_armory.html");
-};
-
-function idToRace(id){
-  switch (id) {
-    case (0):
-      return 'Divine';
-    case (1):
-      return 'Human';
-    case (2):
-      return 'Dwarves';
-    case (3):
-      return 'Elves';
-    case (4):
-      return 'Orcs';
-    case (5):
-      return 'Undead';      
-    default:
-      throw 'Invalid Race ID';
-  }
-};
-
-function weaponLevelToName(level){
-  switch (level) {
-    case (0):
-      return 'None';
-    case (1):
-      return 'Flaming Arrows';
-    case (2):
-      return 'Ballistas';
-    case (3):
-      return 'Battering Ram';
-    case (4):
-      return 'Ladders';
-    case (5):
-      return 'Trojan Horse';
-    case (6):
-      return 'Catapults'; 
-    case (7):
-      return 'War Elephants'; 
-    case (8):
-      return 'Siege Towers';
-    case (9):
-      return 'Trebuchets'; 
-    case (10):
-      return 'Black Powder';
-    case (11):
-      return 'Sappers';
-    case (12):
-      return 'Dynamite';
-    case (13):
-      return 'Greek Fire';
-    case (14):
-      return 'Cannons'; 
-    default:
-      throw 'Invalid Weapon Level';
-  }
-};
-
-function fortressLevelToName(level){
-  switch (level) {
-    case (0):
-      return 'Camp';
-    case (1):
-      return 'Stockade';
-    case (2):
-      return 'Rabid Pitbulls';
-    case (3):
-      return 'Walled Town';
-    case (4):
-      return 'Towers';
-    case (5):
-      return 'Battlements';
-    case (6):
-      return 'Portcullis'; 
-    case (7):
-      return 'Boiling Oil'; 
-    case (8):
-      return 'Trenches';
-    case (9):
-      return 'Moat'; 
-    case (10):
-      return 'Draw Bridge';
-    case (11):
-      return 'Fortress';
-    case (12):
-      return 'Stronghold';
-    case (13):
-      return 'Palace';
-    case (14):
-      return 'Keep';
-    case (15):
-      return 'Citadel'; 
-    case (16):
-      return 'Hand of God'; 
-    default:
-      throw 'Invalid Fortress Level';
-  }
-};
-
-function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };

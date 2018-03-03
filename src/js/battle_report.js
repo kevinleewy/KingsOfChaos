@@ -53,14 +53,30 @@ App = {
       App.pov = GetURLParameter('pov');
       kingdomFactoryInstance.haveKingdom().then(function(haveKingdom){
         if(!haveKingdom){
-          //TODO: Hide Attack Again Button
+          location.assign("create.html");
         }
         loadSections(haveKingdom);
       }).then(function() {
-        kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
-          var sidebar_user_stats = $('#sidebar_user_stats');
-          sidebar_user_stats.find('.gold').text(kingdom[3]);
-        });
+          kingdomFactoryInstance.getMyKingdom().then(function(kingdom){
+            var gold = numberWithCommas(kingdom[3].c[0]);
+            var kingdomLevel = kingdom[2][0].c[0];
+            var experience = numberWithCommas(kingdom[4].c[0]);
+            var requiredExperience = numberWithCommas(100 * kingdomLevel * kingdomLevel);
+
+            var sidebar_user_stats = $('#sidebar_user_stats');
+            sidebar_user_stats.find('.gold').text(gold);
+            sidebar_user_stats.find('.level').text(kingdomLevel);
+            sidebar_user_stats.find('.experience').text(experience);
+          });
+
+          kingdomFactoryInstance.canAttack().then(function(result){
+            var sidebar_user_stats = $('#sidebar_user_stats');
+            if(result[0]){
+              sidebar_user_stats.find('.attackCooldown').text("Ready");
+            } else {
+              sidebar_user_stats.find('.attackCooldown').text(secondsToDays(result[1]));
+            }
+          });
 
         kingdomFactoryInstance.getBattle(App.battleId).then(function(battle) {
           if(App.pov == 1){

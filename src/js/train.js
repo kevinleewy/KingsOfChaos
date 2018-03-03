@@ -77,8 +77,14 @@ App = {
 
         kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
           var gold = numberWithCommas(kingdom[3].c[0]);
+          var kingdomLevel = kingdom[2][0].c[0];
+          var experience = numberWithCommas(kingdom[4].c[0]);
+          var requiredExperience = numberWithCommas(100 * kingdomLevel * kingdomLevel);
+
           var sidebar_user_stats = $('#sidebar_user_stats');
           sidebar_user_stats.find('.gold').text(gold);
+          sidebar_user_stats.find('.level').text(kingdomLevel);
+          sidebar_user_stats.find('.experience').text(experience);
           
           var upgradeCovertTable = $('#upgradeCovertTable');
           var covertLevel = kingdom[2][2]
@@ -88,6 +94,15 @@ App = {
           } else {
             upgradeCovertTable.find('.upgradeCovertButton').attr("value", "Fully upgraded.");
             upgradeCovertTable.find('.upgradeCovertButton').attr("disabled", "disabled");
+          }
+        });
+
+        kingdomFactoryInstance.canAttack().then(function(result){
+          var sidebar_user_stats = $('#sidebar_user_stats');
+          if(result[0]){
+            sidebar_user_stats.find('.attackCooldown').text("Ready");
+          } else {
+            sidebar_user_stats.find('.attackCooldown').text(secondsToDays(result[1]));
           }
         });
         
