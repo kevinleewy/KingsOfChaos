@@ -52,8 +52,16 @@ App = {
         loadSections(haveKingdom);
         if(haveKingdom){
           kingdomFactoryInstance.getMyKingdom().then(function(kingdom){
+            var gold = numberWithCommas(kingdom[3].c[0]);
+            var kingdomLevel = kingdom[2][0].c[0];
+            var experience = numberWithCommas(kingdom[4].c[0]);
+            var requiredExperience = numberWithCommas(100 * kingdomLevel * kingdomLevel);
+
             var sidebar_user_stats = $('#sidebar_user_stats');
-            sidebar_user_stats.find('.gold').text(kingdom[5]);
+            sidebar_user_stats.find('.gold').text(gold);
+            sidebar_user_stats.find('.level').text(kingdomLevel);
+            sidebar_user_stats.find('.experience').text(experience);
+
             kingdomFactoryInstance.isCommander(id).then(function(isCommander){
               kingdomFactoryInstance.isMyKingdomId(id).then(function(isMyId){
                 var button = $('#assignButton');
@@ -70,6 +78,16 @@ App = {
               });
             });
           });
+
+          kingdomFactoryInstance.canAttack().then(function(result){
+            var sidebar_user_stats = $('#sidebar_user_stats');
+            if(result[0]){
+              sidebar_user_stats.find('.attackCooldown').text("Ready");
+            } else {
+              sidebar_user_stats.find('.attackCooldown').text(secondsToDays(result[1]));
+            }
+          });
+
           App.buttonLink = "pages/base.html";
         }
       }).then(function(){

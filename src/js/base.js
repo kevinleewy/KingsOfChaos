@@ -69,23 +69,41 @@ App = {
           }
         });
 
+        kingdomFactoryInstance.canAttack().then(function(result){
+          var sidebar_user_stats = $('#sidebar_user_stats');
+          if(result[0]){
+            sidebar_user_stats.find('.attackCooldown').text("Ready");
+          } else {
+            sidebar_user_stats.find('.attackCooldown').text(secondsToDays(result[1]));
+          }
+        });
+
         kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
           var gold = numberWithCommas(kingdom[3].c[0]);
+          var kingdomLevel = kingdom[2][0].c[0];
+          var experience = numberWithCommas(kingdom[4].c[0]);
+          var requiredExperience = numberWithCommas(100 * kingdomLevel * kingdomLevel);
+
           var sidebar_user_stats = $('#sidebar_user_stats');
           sidebar_user_stats.find('.gold').text(gold);
+          sidebar_user_stats.find('.level').text(kingdomLevel);
+          sidebar_user_stats.find('.experience').text(experience);
           
           var race = idToRace(kingdom[1].c[0]);
           var user_info = $('#user_info');
           user_info.find('.name').text(kingdom[0]);
           user_info.find('.race').text(race);
-          user_info.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[4]);
-          user_info.find('.commander').text(kingdom[5]);
+          user_info.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[5]);
+          user_info.find('.commander').text(kingdom[6]);
+          user_info.find('.level').text(kingdomLevel);
+          user_info.find('.experience').text(experience);
+          user_info.find('.requiredExperience').text(requiredExperience);
 
           var military_overview_table = $('#military_overview_table');
-          military_overview_table.find('.weapon_name').text(weaponLevelToName(kingdom[2][0].c[0]));
-          military_overview_table.find('.fortress_name').text(fortressLevelToName(kingdom[2][1].c[0]));
+          military_overview_table.find('.weapon_name').text(weaponLevelToName(kingdom[2][1].c[0]));
+          military_overview_table.find('.fortress_name').text(fortressLevelToName(kingdom[2][2].c[0]));
           military_overview_table.find('.gold').text(gold);
-          military_overview_table.find('.covert_level').text(kingdom[2][2].c[0]);
+          military_overview_table.find('.covert_level').text(kingdom[2][3].c[0]);
         });
 
         kingdomFactoryInstance.getMyRecentAttacks().then(function(recentAttacks) {

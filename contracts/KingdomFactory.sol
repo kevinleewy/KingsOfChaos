@@ -26,14 +26,20 @@ contract KingdomFactory {
     mapping (uint256 => address) private kingdomToOwner;
     mapping (uint256 => uint256) private numOfOfficers;
     mapping (uint256 => uint256) private recruitTime;
+    mapping (uint256 => uint256) private attackTime;
 
     uint8 private weaponMultiplier   = 30;
     uint8 private fortressMultiplier = 25;
     uint8 private covertMultiplier   = 60;
 
+    uint8 private kingdomMaxLevel  = 100;
     uint8 private weaponMaxLevel   = 14;
     uint8 private fortressMaxLevel = 16;
     uint8 private covertMaxLevel   = 15;
+
+    //Exp required to level up:
+    //  Required Exp = 100 * level^2
+    uint16 private levelUpBaseExp  = 100;
 
     //Price of Upgrading:
     //  price = basePrice * 2^currentLevel
@@ -42,8 +48,9 @@ contract KingdomFactory {
     uint16 private covertBasePrice   = 12000;
 
     uint256 private recruitCooldown = 5 minutes; // 6 hours;
+    uint256 private attackCooldown = 5 minutes; // 1 hour;
 
-    uint8[] private incomeBonus     = [  0, 30, 15,  0,  0,  0];
+    uint8[] private experienceBonus = [  0, 30, 15,  0,  0,  0];
     uint8[] private attackBonus     = [100,  0,  0,  0, 35,  0];
     uint8[] private defenseBonus    = [100,  0, 40,  0, 20,  0];
     uint8[] private spyBonus        = [100, 35,  0, 45,  0,  0];
@@ -53,11 +60,13 @@ contract KingdomFactory {
 
     struct Kingdom {
       string name;
-      uint8 race; //0 - divine; 1 - human; 2 - dwarves; 
+      uint8 race; //0 - divine; 1 - human; 2 - dwarves;
+      uint8 level;
       uint8 weaponLevel;
       uint8 fortressLevel;
       uint8 covertLevel;
       uint256 gold;
+      uint256 experience;
       uint256 commander;
     }
 
@@ -88,14 +97,14 @@ contract KingdomFactory {
     }
 
     function KingdomFactory() public {
-      _createKingdom("God", 0, [14, 16, 15], [uint(1000000), uint(200000), uint(200000), uint(10000), uint(10000)], 0);
-      _createKingdom("God\'s Right Hand", 0, [12, 14, 10], [uint(100000), uint(20000), uint(20000), uint(1000), uint(1000)], 0);
-      _createKingdom("God\'s Left Hand", 0, [12, 14, 10], [uint(100000), uint(20000), uint(20000), uint(1000), uint(1000)], 0);
+      _createKingdom("God", 0, [50, 14, 16, 15], [uint(1000000), uint(200000), uint(200000), uint(10000), uint(10000)], 0);
+      _createKingdom("God\'s Right Hand", 0, [30, 12, 14, 10], [uint(100000), uint(20000), uint(20000), uint(1000), uint(1000)], 0);
+      _createKingdom("God\'s Left Hand", 0, [30, 12, 14, 10], [uint(100000), uint(20000), uint(20000), uint(1000), uint(1000)], 0);
     }
 
-    function _createKingdom(string _name, uint8 _race, uint8[3] _technologyLevel, uint[5] _militaryCount, uint _commander)
+    function _createKingdom(string _name, uint8 _race, uint8[4] _level, uint[5] _militaryCount, uint _commander)
       private returns (uint){
-      uint id = kingdoms.push(Kingdom(_name, _race, _technologyLevel[0], _technologyLevel[1], _technologyLevel[2], 0, _commander)) - 1;
+      uint id = kingdoms.push(Kingdom(_name, _race, _level[0], _level[1], _level[2], _level[3], 0, 0, _commander)) - 1;
       militaries.push(Military(_militaryCount[0], _militaryCount[1], 0, _militaryCount[2], 0, _militaryCount[3], _militaryCount[4]));
       kingdomToOwner[id] = msg.sender;
       kingdomOf[msg.sender] = id;
@@ -107,14 +116,14 @@ contract KingdomFactory {
     function createNewKingdom(string _name, uint _race, uint _commanderId) public returns (uint){
       require(kingdomOf[msg.sender] == 0);
       require(_race >= 1 && _race <= 5);
-      return _createKingdom(_name, uint8(_race), [0, 0, 0], [uint(0), uint(0), uint(0), uint(0), uint(0)], _commanderId);
+      return _createKingdom(_name, uint8(_race), [0, 0, 0, 0], [uint(0), uint(0), uint(0), uint(0), uint(0)], _commanderId);
     }
 
-    function getKingdom(uint _id) public view returns (string, uint8, uint8[3], uint, uint, string) {
+    function getKingdom(uint _id) public view returns (string, uint8, uint8[4], uint, uint, uint, string) {
       var kingdom = kingdoms[_id];
       var commanderName = kingdoms[kingdom.commander].name;
-      return (kingdom.name, kingdom.race, [kingdom.weaponLevel, kingdom.fortressLevel, kingdom.covertLevel], kingdom.gold,
-          kingdom.commander, commanderName);
+      return (kingdom.name, kingdom.race, [kingdom.level, kingdom.weaponLevel, kingdom.fortressLevel, kingdom.covertLevel], kingdom.gold,
+          kingdom.experience, kingdom.commander, commanderName);
     }
 
     function getPersonnel(uint _id) private view returns (uint256[7]) {
@@ -131,6 +140,22 @@ contract KingdomFactory {
       }
       return (false, [uint(0), uint(0), uint(0), uint(0), uint(0), uint(0), uint(0)]);
     }
+
+    function gainExperience(uint _id, uint _exp) private {
+      require(_id > 0);
+      kingdoms[_id].experience += _exp; 
+      uint8 level = kingdoms[_id].level;
+      uint amountToLevelUp = levelUpBaseExp * level * level;
+      while(kingdoms[_id].experience >= amountToLevelUp) {
+        kingdoms[_id].level += 1;
+        kingdoms[_id].experience -= amountToLevelUp;
+        level = kingdoms[_id].level;
+        //amount difference between level x and level x - 1
+        // = (base * x^2) - (base * (x-1)^2)
+        // = base(2x-1)
+        amountToLevelUp += levelUpBaseExp * (2 * level - 1);
+      }
+    } 
 
     function getWeaponMultiplier() public view returns (uint8) {
       return weaponMultiplier;
@@ -187,7 +212,7 @@ contract KingdomFactory {
       return (kingdomOf[msg.sender] == _id);
     }
 
-    function getMyKingdom() public view returns (string, uint8, uint8[3], uint, uint, string) {
+    function getMyKingdom() public view returns (string, uint8, uint8[4], uint, uint, uint, string) {
       uint256 id = kingdomOf[msg.sender];
       require(id > 0);
       return getKingdom(id);
@@ -321,15 +346,29 @@ contract KingdomFactory {
       return sentryRating(id);
     }
 
+    //returns true,0 if can recruit, otherwise returns false and number of seconds remaining
+    function canAttack() public view returns (bool, uint256){
+      uint256 timePassed = now - attackTime[kingdomOf[msg.sender]];
+      if(timePassed > attackCooldown){
+        return (true, 0);
+      }
+      return (false, attackCooldown - timePassed);
+    }
+
     function attack(uint256 _targetID) public {
       uint256 attacker = kingdomOf[msg.sender];
-      require(attacker != _targetID);
+      require(attacker > 0 && attacker != _targetID);
+      require (now - attackTime[attacker] > attackCooldown);
       uint256 attacker_damage = myStrikeAction();
       uint256 defender_damage = defensiveAction(_targetID);
       uint256 attacker_casualties = 0;
       uint256 defender_casualties = 0;
       bool success = attacker_damage > defender_damage;
       uint256 battleID = battles.push(Battle(now, attacker, _targetID, attacker_damage, defender_damage, attacker_casualties, defender_casualties, success)) - 1;
+      if(success){
+        gainExperience(attacker, 100);
+      }
+      attackTime[attacker] = now;
       BattleCompleted(battleID);
     }
 

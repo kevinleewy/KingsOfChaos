@@ -56,14 +56,19 @@ App = {
       })
     }).then(function() {
       kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
+        var gold = numberWithCommas(kingdom[3].c[0]);
+        var kingdomLevel = kingdom[2][0].c[0];
+        var experience = numberWithCommas(kingdom[4].c[0]);
+        var requiredExperience = numberWithCommas(100 * kingdomLevel * kingdomLevel);
+
         var sidebar_user_stats = $('#sidebar_user_stats');
-        gold = numberWithCommas(kingdom[3].c[0]);
         sidebar_user_stats.find('.gold').text(gold);
+        sidebar_user_stats.find('.level').text(kingdomLevel);
+        sidebar_user_stats.find('.experience').text(experience);
 
         kingdomFactoryInstance.getWeaponMultiplier().then(function(multiplier) {
-          sidebar_user_stats.find('.gold').text(gold);
           var upgradeWeaponForm = $('#upgradeWeapon');
-          var weaponLevel = kingdom[2][0].c[0];
+          var weaponLevel = kingdom[2][1].c[0];
           totalMultiplier = Math.pow(1 + multiplier/100, weaponLevel).toFixed(2);
           upgradeWeaponForm.find('.weapon_name').text(weaponLevelToName(weaponLevel));
           upgradeWeaponForm.find('.weapon_multiplier').text(totalMultiplier);
@@ -77,7 +82,7 @@ App = {
 
         kingdomFactoryInstance.getFortressMultiplier().then(function(multiplier) {
           var upgradeFortressForm = $('#upgradeFortress');
-          var fortressLevel = kingdom[2][1].c[0];
+          var fortressLevel = kingdom[2][2].c[0];
           totalMultiplier = Math.pow(1 + multiplier/100, fortressLevel).toFixed(2);
           upgradeFortressForm.find('.fortress_name').text(fortressLevelToName(fortressLevel));
           upgradeFortressForm.find('.fortress_multiplier').text(totalMultiplier);
