@@ -134,7 +134,6 @@ App = {
               })(i);
             } 
           }
-          console.log(count)
           $('#recentAttacksByYouTable').find('.totalAttacksByYou').text(count);
         });
       });

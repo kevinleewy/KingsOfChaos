@@ -81,6 +81,8 @@ App = {
             kingdomFactoryInstance.getKingdom(id).then(function(kingdom){
               kingdomFactoryInstance.spyOnPersonnel(id).then(function(personnel){
                 var armyCount;
+                //var buddyIcon = "/images//buddy_icons/small_icon_.gif";
+                var buddyIcon = "";
                 if(personnel[0]){
                   var totalFightingForce = 0;
                   personnel[1].forEach(function(x){
@@ -93,7 +95,7 @@ App = {
                 $('#battlefieldTable tr:last').before('\
                   <tr class="player" user_id="' + id + '" >\
                       <td align="center" valign="middle" style="padding: 0">\
-                          <img class="buddy_type" style="display: none" alt="" src="/images//buddy_icons/small_icon_.gif">\
+                          <img class="buddy_type" style="display: none" alt="" src="' + buddyIcon + '">\
                           &nbsp;\
                       </td>\
                       <td align="right" style="color: #ffffff;">\

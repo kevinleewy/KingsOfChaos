@@ -85,6 +85,7 @@ App = {
           military_overview_table.find('.weapon_name').text(weaponLevelToName(kingdom[2][0].c[0]));
           military_overview_table.find('.fortress_name').text(fortressLevelToName(kingdom[2][1].c[0]));
           military_overview_table.find('.gold').text(gold);
+          military_overview_table.find('.covert_level').text(kingdom[2][2].c[0]);
         });
 
         kingdomFactoryInstance.getMyRecentAttacks().then(function(recentAttacks) {

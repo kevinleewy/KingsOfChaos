@@ -27,13 +27,19 @@ contract KingdomFactory {
     mapping (uint256 => uint256) private numOfOfficers;
     mapping (uint256 => uint256) private recruitTime;
 
-    uint8 private weaponMultiplier = 30;
+    uint8 private weaponMultiplier   = 30;
     uint8 private fortressMultiplier = 25;
-    uint8 private covertMultiplier = 60;
+    uint8 private covertMultiplier   = 60;
 
-    uint8 private weaponMaxLevel = 14;
+    uint8 private weaponMaxLevel   = 14;
     uint8 private fortressMaxLevel = 16;
-    uint8 private covertMaxLevel = 15;
+    uint8 private covertMaxLevel   = 15;
+
+    //Price of Upgrading:
+    //  price = basePrice * 2^currentLevel
+    uint16 private weaponBasePrice   = 40000;
+    uint16 private fortressBasePrice = 40000;
+    uint16 private covertBasePrice   = 12000;
 
     uint256 private recruitCooldown = 5 minutes; // 6 hours;
 
