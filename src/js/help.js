@@ -36,13 +36,7 @@ App = {
   },
 
   bindEvents: function() {
-    $(document).on('click', '#trainAttackButton', App.trainAttack);
-    $(document).on('click', '#trainDefenseButton', App.trainDefense);
-    $(document).on('click', '#trainSpiesButton', App.trainSpies);
-    $(document).on('click', '#trainSentriesButton', App.trainSentries);
-    $(document).on('click', '#reassignAttackButton', App.reassignAttack);
-    $(document).on('click', '#reassignDefenseButton', App.reassignDefense);
-    $(document).on('click', '#upgradeCovertButton', App.upgradeCovert);
+    //$(document).on('click', '#trainAttackButton', App.trainAttack);
   },
 
   loadPage: function(kingdoms, account) {
@@ -52,229 +46,19 @@ App = {
     App.contracts.KingdomFactory.deployed().then(function(instance) {
       kingdomFactoryInstance = instance;
       kingdomFactoryInstance.haveKingdom().then(function(haveKingdom){
-        if(!haveKingdom){
-          location.assign("create.html");
+        if(haveKingdom){
+          kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
+            var gold = numberWithCommas(kingdom[3].c[0]);
+            var sidebar_user_stats = $('#sidebar_user_stats');
+            sidebar_user_stats.find('.gold').text(gold);
+          });
         }
-        loadSections(haveKingdom);
-      }).then(function() {
-
-        kingdomFactoryInstance.getMyPersonnel().then(function(personnel) {
-          var personnelTable = $('#personnel');
-          personnelTable.find('.untrainedSoldiers').text(numberWithCommas(personnel[0]));
-          personnelTable.find('.trainedAttackSoldiers').text(numberWithCommas(personnel[1]));
-          personnelTable.find('.attackMercs').text(numberWithCommas(personnel[2]));
-          personnelTable.find('.trainedDefenseSoldiers').text(numberWithCommas(personnel[3]));
-          personnelTable.find('.defenseMercs').text(numberWithCommas(personnel[4]));
-          personnelTable.find('.spies').text(numberWithCommas(personnel[5]));
-          personnelTable.find('.sentries').text(numberWithCommas(personnel[6]));
-          var totalFightingForce = 0;
-          personnel.forEach(function(x){
-            totalFightingForce += x.c[0];
-          })
-          personnelTable.find('.totalFightingForce').text(numberWithCommas(totalFightingForce));
-          personnelTable.find('.personnelCount').text(numberWithCommas(totalFightingForce));
-        });
-
-        kingdomFactoryInstance.getMyKingdom().then(function(kingdom) {
-          var gold = numberWithCommas(kingdom[3].c[0]);
-          var sidebar_user_stats = $('#sidebar_user_stats');
-          sidebar_user_stats.find('.gold').text(gold);
-          
-          var upgradeCovertTable = $('#upgradeCovertTable');
-          var covertLevel = kingdom[2][2]
-          upgradeCovertTable.find('.covertLevel').text(covertLevel);
-          if(covertLevel < 15){
-            upgradeCovertTable.find('.upgradeCovertButton').attr("value", "62,900 Gold (+60%)");
-          } else {
-            upgradeCovertTable.find('.upgradeCovertButton').attr("value", "Fully upgraded.");
-            upgradeCovertTable.find('.upgradeCovertButton').attr("disabled", "disabled");
-          }
-        });
-        
+        loadSections(haveKingdom);        
       });
     }).catch(function(err) {
       console.log('displayBase:' + err.message);
     });
   },
-
-  trainAttack: function(event){
-    event.preventDefault();
-
-    var count = parseInt($('#attackQuantity').val());
-    if(count > 0){
-      this.value = "Training...";
-      this.disabled = "disabled";
-
-      var kingdomFactoryInstance;
-
-      App.contracts.KingdomFactory.deployed().then(function(instance) {
-        kingdomFactoryInstance = instance;
-        kingdomFactoryInstance.trainAttackSpecialists(count).then(function(haveKingdom){
-          kingdomFactoryInstance.TrainedAttackSpecialists().watch(function(err, response){
-            alert("Trained Attack Specialists!");
-            location.assign("train.html");
-          });
-        })
-      }).catch(function(err) {
-        console.log('Training Attack Specialists:' + err.message);
-      });
-    } else {
-      alert("Quantity must be greater than 0");
-    }   
-  },
-
-  trainDefense: function(event){
-    event.preventDefault();
-
-    var count = parseInt($('#defenseQuantity').val());
-    if(count > 0){
-      this.value = "Training...";
-      this.disabled = "disabled";
-
-      var kingdomFactoryInstance;
-
-      App.contracts.KingdomFactory.deployed().then(function(instance) {
-        kingdomFactoryInstance = instance;
-        kingdomFactoryInstance.trainDefenseSpecialists(count).then(function(haveKingdom){
-          kingdomFactoryInstance.TrainedDefenseSpecialists().watch(function(err, response){
-            alert("Trained Defense Specialists!");
-            location.assign("train.html");
-          });
-        })
-      }).catch(function(err) {
-        console.log('Training Defense Specialists:' + err.message);
-      });
-    } else {
-      alert("Quantity must be greater than 0");
-    }   
-  },
-
-  trainSpies: function(event){
-    event.preventDefault();
-
-    var count = parseInt($('#spiesQuantity').val());
-    if(count > 0){
-      this.value = "Training...";
-      this.disabled = "disabled";
-
-      var kingdomFactoryInstance;
-
-      App.contracts.KingdomFactory.deployed().then(function(instance) {
-        kingdomFactoryInstance = instance;
-        kingdomFactoryInstance.trainSpies(count).then(function(haveKingdom){
-          kingdomFactoryInstance.TrainedSpies().watch(function(err, response){
-            alert("Trained Spies!");
-            location.assign("train.html");
-          });
-        })
-      }).catch(function(err) {
-        console.log('Training Spies:' + err.message);
-      });
-    } else {
-      alert("Quantity must be greater than 0");
-    }   
-  },
-
-  trainSentries: function(event){
-    event.preventDefault();
-
-    var count = parseInt($('#sentriesQuantity').val());
-    if(count > 0){
-      this.value = "Training...";
-      this.disabled = "disabled";
-      var kingdomFactoryInstance;
-
-      App.contracts.KingdomFactory.deployed().then(function(instance) {
-        kingdomFactoryInstance = instance;
-        kingdomFactoryInstance.trainSentries(count).then(function(haveKingdom){
-          kingdomFactoryInstance.TrainedSentries().watch(function(err, response){
-            alert("Trained Sentries!");
-            location.assign("train.html");
-          });
-        })
-      }).catch(function(err) {
-        console.log('Training Spies:' + err.message);
-      });
-    } else {
-      alert("Quantity must be greater than 0");
-    }   
-  },
-
-  reassignAttack: function(event){
-    event.preventDefault();
-
-    var count = parseInt($('#unAttackQuantity').val());
-    if(count > 0){
-      this.value = "Reassigning...";
-      this.disabled = "disabled";
-      var kingdomFactoryInstance;
-
-      App.contracts.KingdomFactory.deployed().then(function(instance) {
-        kingdomFactoryInstance = instance;
-        kingdomFactoryInstance.reassignAttackSpecialists(count).then(function(haveKingdom){
-          kingdomFactoryInstance.ReassignedAttackSpecialists().watch(function(err, response){
-            alert("Reassigned Attack Specialists!");
-            location.assign("train.html");
-          });
-        })
-      }).catch(function(err) {
-        console.log('Reassigning Attack Specialists:' + err.message);
-      });
-    } else {
-      alert("Quantity must be greater than 0");
-    }   
-  },
-
-  reassignDefense: function(event){
-    event.preventDefault();
-
-    var count = parseInt($('#unDefenseQuantity').val());
-    if(count > 0){
-      this.value = "Reassigning...";
-      this.disabled = "disabled";
-      var kingdomFactoryInstance;
-
-      App.contracts.KingdomFactory.deployed().then(function(instance) {
-        kingdomFactoryInstance = instance;
-        kingdomFactoryInstance.reassignDefenseSpecialists(count).then(function(haveKingdom){
-          kingdomFactoryInstance.ReassignedDefenseSpecialists().watch(function(err, response){
-            alert("Reassigned Defense Specialists!");
-            location.assign("train.html");
-          });
-        })
-      }).catch(function(err) {
-        console.log('Reassigning Defense Specialists:' + err.message);
-      });
-    } else {
-      alert("Quantity must be greater than 0");
-    }   
-  },
-
-  upgradeCovert: function(event) {
-    event.preventDefault();
-
-    this.value = "Upgrading...";
-    this.disabled = "disabled";
-    var kingdomFactoryInstance;
-
-    App.contracts.KingdomFactory.deployed().then(function(instance) {
-      kingdomFactoryInstance = instance;
-      kingdomFactoryInstance.haveKingdom().then(function(haveKingdom){
-        if(!haveKingdom){
-          location.assign("create.html");
-        }
-        kingdomFactoryInstance.upgradeCovert().then(function(){
-          kingdomFactoryInstance.UpgradeCovert().watch(function(err, response){
-            alert("Upgraded Covert Skill!");
-            location.assign("train.html");
-          });
-        });
-      })
-    }).catch(function(err) {
-      console.log('upgradeCovert:' + err.message);
-    });
-  },
-
 };
 
 $(function() {
