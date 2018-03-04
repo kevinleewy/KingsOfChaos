@@ -20,7 +20,7 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('../KingdomFactory.json', function(data) {
+    $.getJSON('../RealmOfWars.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract
       var KingdomFactoryArtifact = data;
       App.contracts.KingdomFactory = TruffleContract(KingdomFactoryArtifact);

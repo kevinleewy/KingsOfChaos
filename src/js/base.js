@@ -20,7 +20,7 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('../KingdomFactory.json', function(data) {
+    $.getJSON('../RealmOfWars.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract
       var KingdomFactoryArtifact = data;
       App.contracts.KingdomFactory = TruffleContract(KingdomFactoryArtifact);
@@ -182,6 +182,7 @@ App = {
             officers.forEach(function(officer){
               kingdomFactoryInstance.getKingdom(officer).then(function(kingdom) {
                 kingdomFactoryInstance.spyOnPersonnel(officer).then(function(personnel) {
+                  var kingdomLevel = kingdom[2][0].c[0];
                   var totalFightingForce = 0;
                   personnel[1].forEach(function(x){
                     totalFightingForce += x.c[0];
@@ -189,7 +190,7 @@ App = {
                   $('#officers tr:last').before(
                     '<tr>\
                       <td ><a href=\"/pages/stats.html?id=' + officer.c[0] + '\" >' + kingdom[0] + '</a></td>\
-                      <td  align="right">457</td>\
+                      <td  align="right">' + kingdomLevel + '</td>\
                       <td  align="right">' + totalFightingForce + '</td>\
                       <td  align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
                       <td  align="right">0</td>\

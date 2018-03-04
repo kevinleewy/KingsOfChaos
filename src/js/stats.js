@@ -20,7 +20,7 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('../KingdomFactory.json', function(data) {
+    $.getJSON('../RealmOfWars.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract
       var KingdomFactoryArtifact = data;
       App.contracts.KingdomFactory = TruffleContract(KingdomFactoryArtifact);
@@ -94,9 +94,14 @@ App = {
 
         kingdomFactoryInstance.getKingdom(id).then(function(kingdom) {
           kingdomFactoryInstance.spyOnPersonnel(id).then(function(personnel) {
+            
+            var race = idToRace(kingdom[1].c[0]);
+            var kingdomLevel = kingdom[2][0].c[0];
+            var experience = numberWithCommas(kingdom[4].c[0]);
+            var requiredExperience = numberWithCommas(100 * kingdomLevel * kingdomLevel);
+
             var user_stats = $('#user_stats');
             user_stats.find('.name').text(kingdom[0]);
-            var race = idToRace(kingdom[1].c[0]);
             user_stats.find('.race').text(race);
             if(personnel[0]){
               var totalFightingForce = 0;
@@ -107,10 +112,14 @@ App = {
             } else {
               user_stats.find('.numOfSoldiers').text("???");              
             }
-            user_stats.find('.weaponLevel').text(kingdom[2]);
-            user_stats.find('.fortressLevel').text(kingdom[3]);
-            user_stats.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[4]);
-            user_stats.find('.commander').text(kingdom[5]);
+            user_stats.find('.level').text(kingdomLevel);
+            user_stats.find('.weaponLevel').text(kingdom[2][1]);
+            user_stats.find('.fortressLevel').text(kingdom[2][2]);
+            user_stats.find('.experience').text(experience);
+            user_stats.find('.requiredExperience').text(requiredExperience);
+            user_stats.find('.commander').attr("href", "/pages/stats.html?id=" + kingdom[5]);
+            user_stats.find('.commander').text(kingdom[6]);
+
           });
         });
 
@@ -122,6 +131,7 @@ App = {
             officers.forEach(function(officer){
               kingdomFactoryInstance.getKingdom(officer).then(function(kingdom) {
                 kingdomFactoryInstance.spyOnPersonnel(officer).then(function(personnel) {
+                  var kingdomLevel = kingdom[2][0].c[0];
                   var totalFightingForce;
                   if(personnel[0]){
                     totalFightingForce = 0;
@@ -136,7 +146,7 @@ App = {
                   $('#officers tr:last').before(
                     '<tr>\
                       <td ><a href=\"/pages/stats.html?id=' + officer.c[0] + '\" >' + kingdom[0] + '</a></td>\
-                      <td  align="right">457</td>\
+                      <td  align="right">' + kingdomLevel + '</td>\
                       <td  align="right">' + totalFightingForce + '</td>\
                       <td  align="left">' + idToRace(kingdom[1].c[0]) + '</td>\
                     </tr>'
